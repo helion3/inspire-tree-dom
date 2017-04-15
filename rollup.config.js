@@ -97,6 +97,7 @@ export default {
     external: ['lodash', 'InspireTree', 'inspire-tree'],
     banner: banner,
     globals: {
+        'inspire-tree': 'InspireTree',
         lodash: '_'
     },
     plugins: plugins
