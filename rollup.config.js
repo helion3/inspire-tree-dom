@@ -11,6 +11,7 @@ import path from 'path';
 import postcss from 'postcss';
 import scss from 'rollup-plugin-scss';
 import uglify from 'rollup-plugin-uglify';
+import zlib from 'zlib';
 
 // Read package config
 const pkgConfig = require('./package.json');
@@ -47,18 +48,32 @@ let plugins = [
     scss({
         output: (styles) => {
             postcss([autoprefixer({ targetBrowsers: ['last 2 versions'] })]).process(styles).then(postResult => {
-                var writeCSS = (css) => {
+                var writeCSS = (css, gzip) => {
                     var filepath = path.join(DIST ? 'dist' : 'build', 'inspire-tree' + (MIN ? '.min' : '') + '.css');
                     fs.writeFile(filepath, css, (err) => {
                         if (err) {
                             throw err;
                         }
                     });
+
+                    if (gzip) {
+                        zlib.gzip(css, (zlibErr, res) => {
+                            if (zlibErr) {
+                                throw zlibErr;
+                            }
+
+                            fs.writeFile(filepath + '.gz', res, (err) => {
+                                if (err) {
+                                    throw err;
+                                }
+                            });
+                        });
+                    }
                 };
 
                 if (MIN) {
                     cssnano.process(postResult.css, { zIndex: false }).then((minifyResult) => {
-                        writeCSS(minifyResult.css);
+                        writeCSS(minifyResult.css, true);
                     });
                 }
                 else {
