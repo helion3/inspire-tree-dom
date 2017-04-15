@@ -1,0 +1,58 @@
+{
+  "name": "inspire-tree-dom",
+  "version": "2.0.0-beta.3",
+  "description": "DOM rendering engine for Inspire Tree",
+  "repository": "https://github.com/helion3/inspire-tree-dom",
+  "license": "MIT",
+  "peerDependencies": {
+    "inspire-tree": "^2.0.0-beta.3"
+  },
+  "devDependencies": {
+    "autoprefixer": "^6.7.7",
+    "babel-plugin-inferno": "^3.2.0",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "cssnano": "^3.10.0",
+    "eslint": "^3.19.0",
+    "eslint-plugin-inferno": "^6.10.4",
+    "inferno": "^3.0.4",
+    "inferno-component": "^3.0.4",
+    "inspire-tree": "2.0.0-beta.3",
+    "jquery": "^3.2.1",
+    "karma": "^1.6.0",
+    "karma-chai-plugins": "^0.9.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
+    "karma-es6-shim": "^1.0.0",
+    "karma-mocha": "^1.3.0",
+    "karma-mocha-reporter": "^2.2.3",
+    "mocha": "^3.2.0",
+    "node-sass": "^4.5.2",
+    "postcss": "^5.2.17",
+    "rollup": "^0.41.6",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-gzip": "^1.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-replace": "^1.1.1",
+    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-watch": "^3.2.2"
+  },
+  "scripts": {
+    "lint": "scss-lint src/scss/**/*.scss && eslint test src *.js",
+    "test": "./node_modules/karma/bin/karma start",
+    "watch": "rollup -c -w"
+  },
+  "main": "dist/inspire-tree-dom.js",
+  "files": [
+    "dist",
+    "src",
+    "*.json",
+    "*.d.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "dependencies": {
+    "rollup-plugin-scss": "^0.2.0"
+  }
+}

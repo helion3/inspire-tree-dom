@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>InspireTree</title>
+        <link rel="stylesheet" href="../build/inspire-tree.css" />
+        <link rel="stylesheet" href="demo.css" />
+    </head>
+    <body>
+        <input type="text" placeholder="Search">
+        <div>
+            <div class="source-tree"></div>
+            <div class="toolbar">
+                <button class="move-one">&gt;</button>
+                <button class="revert-one">&lt;</button>
+                <button class="move-all">&gt;&gt;</button>
+                <button class="revert-all">&lt;&lt;</button>
+            </div>
+            <div class="dest-tree"></div>
+        </div>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
+    <script src="require.config.js"></script>
+    <script>
+        require([
+            'jquery',
+            'lodash',
+            'inspire-tree',
+            'inspire-tree-dom'
+        ], function($, _, InspireTree, InspireTreeDOM) {
+            var sourceTree = new InspireTree({
+                data: $.getJSON('sample-data/full.json'),
+                sort: 'text'
+            });
+
+            new InspireTreeDOM(sourceTree, {
+                target: '.source-tree'
+            });
+
+            var destTree = new InspireTree({
+                data: [],
+                sort: 'text'
+            });
+
+            new InspireTreeDOM(destTree, {
+                target: '.dest-tree'
+            });
+
+            $('input').on('keyup', _.debounce(function(event) {
+                sourceTree.search(this.value);
+            }, 500));
+
+            $('.move-one').on('click', function() {
+                var selected = sourceTree.selected();
+                selected.softRemove().copy(true).to(destTree);
+
+                // If we moved a child node, expand nodes down to it
+                destTree.nodes(_.map(selected, 'id')).expandParents();
+            });
+
+            $('.revert-one').on('click', function() {
+                destTree.selected().softRemove().copy(true).to(sourceTree);
+            });
+
+            $('.move-all').on('click', function() {
+                sourceTree.nodes().softRemove().copy().to(destTree);
+            });
+
+            $('.revert-all').on('click', function() {
+                destTree.nodes().softRemove().copy().to(sourceTree);
+            });
+        });
+    </script>
+</html>

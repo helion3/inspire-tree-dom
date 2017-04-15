@@ -1,0 +1,24 @@
+{
+  "name": "inspire-tree-dom",
+  "version": "2.0.0",
+  "homepage": "https://github.com/helion3/inspire-tree",
+  "authors": [
+    "Mike Botsko <botsko@gmail.com>"
+  ],
+  "description": "Inspired Javascript Tree UI Component",
+  "license": "MIT",
+  "main": "dist/inspire-tree.min.js",
+  "ignore": [
+    "demos",
+    "hooks",
+    "test",
+    ".*",
+    "index.html",
+    "karma*",
+    "package.json",
+    "rollup*"
+  ],
+  "private": false,
+  "devDependencies": {
+  }
+}
