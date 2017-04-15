@@ -1,11 +1,11 @@
 {
   "name": "inspire-tree-dom",
-  "version": "2.0.0-beta.3",
+  "version": "2.0.0-beta.4",
   "description": "DOM rendering engine for Inspire Tree",
   "repository": "https://github.com/helion3/inspire-tree-dom",
   "license": "MIT",
   "peerDependencies": {
-    "inspire-tree": "^2.0.0-beta.3"
+    "inspire-tree": "^2.0.0-beta.4"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.7",
@@ -17,7 +17,7 @@
     "eslint-plugin-inferno": "^6.10.4",
     "inferno": "^3.0.4",
     "inferno-component": "^3.0.4",
-    "inspire-tree": "2.0.0-beta.3",
+    "inspire-tree": "2.0.0-beta.4",
     "jquery": "^3.2.1",
     "karma": "^1.6.0",
     "karma-chai-plugins": "^0.9.0",
@@ -35,13 +35,15 @@
     "rollup-plugin-gzip": "^1.1.0",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^1.1.1",
+    "rollup-plugin-scss": "^0.2.0",
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-watch": "^3.2.2"
   },
   "scripts": {
     "lint": "scss-lint src/scss/**/*.scss && eslint test src *.js",
     "test": "./node_modules/karma/bin/karma start",
-    "watch": "rollup -c -w"
+    "watch": "rollup -c -w",
+    "deploy": "DIST=1 rollup -c && DIST=1 MIN=1 rollup -c"
   },
   "main": "dist/inspire-tree-dom.js",
   "files": [
@@ -52,7 +54,5 @@
     "LICENSE",
     "README.md"
   ],
-  "dependencies": {
-    "rollup-plugin-scss": "^0.2.0"
-  }
+  "dependencies": {}
 }

@@ -1999,9 +1999,9 @@ inquirer@^0.12.0:
     strip-ansi "^3.0.0"
     through "^2.3.6"
 
-inspire-tree@2.0.0-beta.3:
-  version "2.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/inspire-tree/-/inspire-tree-2.0.0-beta.3.tgz#f730973eca031b100de3642585e767bc032ccf81"
+inspire-tree@2.0.0-beta.4:
+  version "2.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/inspire-tree/-/inspire-tree-2.0.0-beta.4.tgz#39e9994c58dd607677ef6eb1c1d8e1ac7ac998e0"
 
 interpret@^1.0.0:
   version "1.0.2"
