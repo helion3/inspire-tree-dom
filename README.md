@@ -22,8 +22,8 @@ InspireTree is required.
 
 ### Installation
 
-- Node: `npm install --save inspire-tree-dom` or
-- Bower `bower install --save inspire-tree-dom`
+- Yarn: `yarn install --save-dev inspire-tree-dom` or
+- NPM `npm install --save-dev inspire-tree-dom`
 
 ## Usage
 
