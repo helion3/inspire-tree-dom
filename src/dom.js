@@ -361,13 +361,13 @@ export default class InspireDOM {
         }
     }
 
-   /**
-    * Move select up the visible tree from a starting node.
-    *
-    * @private
-    * @param {object} startingNode Node object.
-    * @return {void}
-    */
+    /**
+     * Move select up the visible tree from a starting node.
+     *
+     * @private
+     * @param {object} startingNode Node object.
+     * @return {void}
+     */
     moveFocusUpFrom(startingNode) {
         let prev = startingNode.previousVisibleNode();
         if (prev) {
