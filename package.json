@@ -5,7 +5,7 @@
   "repository": "https://github.com/helion3/inspire-tree-dom",
   "license": "MIT",
   "peerDependencies": {
-    "inspire-tree": "^2.0.0"
+    "inspire-tree": "^2.0.4"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.1",
@@ -17,7 +17,6 @@
     "eslint-plugin-inferno": "^7.0.1",
     "inferno": "^3.5.0",
     "inferno-component": "^3.5.0",
-    "inspire-tree": "^2.0.3",
     "jquery": "^3.2.1",
     "karma": "^1.7.0",
     "karma-chai-plugins": "^0.9.0",
@@ -54,5 +53,7 @@
     "LICENSE",
     "README.md"
   ],
-  "dependencies": {}
+  "dependencies": {
+    "inspire-tree": "^2.0.4"
+  }
 }
