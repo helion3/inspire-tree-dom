@@ -14,8 +14,12 @@ export default class List extends Component {
 
     loadMore(event) {
         event.preventDefault();
-
-        this.props.dom._tree.loadMore(this.props.context, event);
+        if (this.props.context) {
+            this.props.context.loadMore(event);
+        }
+        else {
+            this.props.dom._tree.loadMore(event);
+        }
     }
 
     renderLoadMoreNode() {
