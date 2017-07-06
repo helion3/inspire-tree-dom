@@ -74,6 +74,12 @@ ansi-styles@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-2.2.1.tgz#b432dd3358b634cf75e1e4664368240533c1ddbe"
 
+ansi-styles@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-3.1.0.tgz#09c202d5c917ec23188caa5c9cb9179cd9547750"
+  dependencies:
+    color-convert "^1.0.0"
+
 anymatch@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/anymatch/-/anymatch-1.3.0.tgz#a3e52fa39168c825ff57b0248126ce5a8ff95507"
@@ -181,15 +187,15 @@ autoprefixer@^6.3.1:
     postcss "^5.2.16"
     postcss-value-parser "^3.2.3"
 
-autoprefixer@^7.1.1:
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-7.1.1.tgz#97bc854c7d0b979f8d6489de547a0d17fb307f6d"
+autoprefixer@^7.1.2:
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-7.1.2.tgz#fbeaf07d48fd878e0682bf7cbeeade728adb2b18"
   dependencies:
-    browserslist "^2.1.3"
-    caniuse-lite "^1.0.30000670"
+    browserslist "^2.1.5"
+    caniuse-lite "^1.0.30000697"
     normalize-range "^0.1.2"
     num2fraction "^1.2.2"
-    postcss "^6.0.1"
+    postcss "^6.0.6"
     postcss-value-parser "^3.2.3"
 
 aws-sign2@~0.6.0:
@@ -739,12 +745,12 @@ browserslist@^1.3.6, browserslist@^1.5.2, browserslist@^1.7.6:
     caniuse-db "^1.0.30000639"
     electron-to-chromium "^1.2.7"
 
-browserslist@^2.1.3:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-2.1.4.tgz#cc526af4a1312b7d2e05653e56d0c8ab70c0e053"
+browserslist@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-2.1.5.tgz#e882550df3d1cd6d481c1a3e0038f2baf13a4711"
   dependencies:
-    caniuse-lite "^1.0.30000670"
-    electron-to-chromium "^1.3.11"
+    caniuse-lite "^1.0.30000684"
+    electron-to-chromium "^1.3.14"
 
 buffer-shims@~1.0.0:
   version "1.0.0"
@@ -804,9 +810,9 @@ caniuse-db@^1.0.30000529, caniuse-db@^1.0.30000634, caniuse-db@^1.0.30000639:
   version "1.0.30000653"
   resolved "https://registry.yarnpkg.com/caniuse-db/-/caniuse-db-1.0.30000653.tgz#123e112a29ce8f3199e4995d2d8b9d95492c5b41"
 
-caniuse-lite@^1.0.30000670:
-  version "1.0.30000670"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000670.tgz#c94f7dbf0b68eaadc46d3d203f46e82e7801135e"
+caniuse-lite@^1.0.30000684, caniuse-lite@^1.0.30000697:
+  version "1.0.30000697"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000697.tgz#125fb00604b63fbb188db96a667ce2922dcd6cdd"
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -852,6 +858,14 @@ chalk@1.1.3, chalk@^1.0.0, chalk@^1.1.0, chalk@^1.1.1, chalk@^1.1.3:
     has-ansi "^2.0.0"
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
+
+chalk@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.0.1.tgz#dbec49436d2ae15f536114e76d14656cdbc0f44d"
+  dependencies:
+    ansi-styles "^3.1.0"
+    escape-string-regexp "^1.0.5"
+    supports-color "^4.0.0"
 
 chokidar@^1.4.1:
   version "1.6.1"
@@ -937,7 +951,7 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-color-convert@^1.3.0:
+color-convert@^1.0.0, color-convert@^1.3.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.0.tgz#1accf97dd739b983bf994d56fec8f95853641b7a"
   dependencies:
@@ -985,7 +999,7 @@ combined-stream@^1.0.5, combined-stream@~1.0.5:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@2.9.0, commander@~2.9.0:
+commander@2.9.0, commander@^2.8.1, commander@~2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.9.0.tgz#9c99094176e12240cb22d6c5146098400fe0f7d4"
   dependencies:
@@ -1184,6 +1198,12 @@ deep-is@~0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
 
+defaults@^1.0.2:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/defaults/-/defaults-1.0.3.tgz#c656051e9817d9ff08ed881477f3fe4019f3ef7d"
+  dependencies:
+    clone "^1.0.2"
+
 defined@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/defined/-/defined-1.0.0.tgz#c98d9bcef75674188e110969151199e39b1fa693"
@@ -1252,9 +1272,9 @@ ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
-electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.11:
-  version "1.3.11"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.11.tgz#744761df1d67b492b322ce9aa0aba5393260eb61"
+electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.14:
+  version "1.3.15"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.15.tgz#08397934891cbcfaebbd18b82a95b5a481138369"
 
 encodeurl@~1.0.1:
   version "1.0.1"
@@ -1351,9 +1371,9 @@ eslint-scope@^3.7.1:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
-eslint@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.0.0.tgz#7277c01437fdf41dccd168d5aa0e49b75ca1f260"
+eslint@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-4.1.1.tgz#facbdfcfe3e0facd3a8b80dc98c4e6c13ae582df"
   dependencies:
     babel-code-frame "^6.22.0"
     chalk "^1.1.3"
@@ -1377,6 +1397,7 @@ eslint@^4.0.0:
     json-stable-stringify "^1.0.1"
     levn "^0.3.0"
     lodash "^4.17.4"
+    minimatch "^3.0.2"
     mkdirp "^0.5.1"
     natural-compare "^1.4.0"
     optionator "^0.8.2"
@@ -1786,6 +1807,10 @@ has-flag@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-1.0.0.tgz#9d9e793165ce017a00f00418c43f942a7b1d11fa"
 
+has-flag@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-2.0.0.tgz#e8207af1cc7b30d446cc70b734b5e8be18f88d51"
+
 has-unicode@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/has-unicode/-/has-unicode-2.0.1.tgz#e0e6fe6a28cf51138855e086d1691e771de2a8b9"
@@ -1882,32 +1907,32 @@ indexof@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/indexof/-/indexof-0.0.1.tgz#82dc336d232b9062179d05ab3293a66059fd435d"
 
-inferno-component@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/inferno-component/-/inferno-component-3.5.0.tgz#bb51867aa753ba8f80949e24bbf58b0fdca7e5ee"
+inferno-component@^3.6.4:
+  version "3.6.4"
+  resolved "https://registry.yarnpkg.com/inferno-component/-/inferno-component-3.6.4.tgz#8645383bac1965559a37d493e142295ac11731e7"
   dependencies:
-    inferno "^3.5.0"
-    inferno-shared "^3.5.0"
-    inferno-vnode-flags "^3.5.0"
+    inferno "3.6.4"
+    inferno-shared "3.6.4"
+    inferno-vnode-flags "3.6.4"
 
-inferno-shared@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/inferno-shared/-/inferno-shared-3.5.0.tgz#80c6f7afac1ca0028ee2b42505ea90ea0cea61e0"
+inferno-shared@3.6.4:
+  version "3.6.4"
+  resolved "https://registry.yarnpkg.com/inferno-shared/-/inferno-shared-3.6.4.tgz#0a13e89ed45c527172d59747b31329487d5f3d7f"
 
 inferno-vnode-flags@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/inferno-vnode-flags/-/inferno-vnode-flags-3.0.0.tgz#f396390f3dafae3b76eea04d04eed6cf2004473b"
 
-inferno-vnode-flags@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/inferno-vnode-flags/-/inferno-vnode-flags-3.5.0.tgz#09b9c0b1bb4f8ba4e4a5bd8a13a21e017ae1a196"
+inferno-vnode-flags@3.6.4:
+  version "3.6.4"
+  resolved "https://registry.yarnpkg.com/inferno-vnode-flags/-/inferno-vnode-flags-3.6.4.tgz#1237612232e22fc2de0346bcb3f802edbd347cae"
 
-inferno@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/inferno/-/inferno-3.5.0.tgz#9bb53d585054532f5d738887913b713c44bcb82a"
+inferno@3.6.4, inferno@^3.6.4:
+  version "3.6.4"
+  resolved "https://registry.yarnpkg.com/inferno/-/inferno-3.6.4.tgz#d36dee9c895530dca0e4a03648b2530531a7aa32"
   dependencies:
-    inferno-shared "^3.5.0"
-    inferno-vnode-flags "^3.5.0"
+    inferno-shared "3.6.4"
+    inferno-vnode-flags "3.6.4"
 
 inflight@^1.0.4:
   version "1.0.6"
@@ -2248,9 +2273,9 @@ karma-chai-plugins@^0.9.0:
     sinon "^2.1.0"
     sinon-chai "^2.8.0"
 
-karma-chrome-launcher@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/karma-chrome-launcher/-/karma-chrome-launcher-2.1.1.tgz#216879c68ac04d8d5140e99619ba04b59afd46cf"
+karma-chrome-launcher@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/karma-chrome-launcher/-/karma-chrome-launcher-2.2.0.tgz#cf1b9d07136cc18fe239327d24654c3dbc368acf"
   dependencies:
     fs-access "^1.0.0"
     which "^1.2.1"
@@ -2604,7 +2629,7 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-nan@^2.3.0, nan@^2.3.2:
+nan@^2.0.0, nan@^2.3.0, nan@^2.3.2:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.6.1.tgz#8c84f7b14c96b89f57fbc838012180ec8ca39a01"
 
@@ -2638,7 +2663,7 @@ node-gyp@^3.3.1:
     tar "^2.0.0"
     which "1"
 
-node-pre-gyp@^0.6.29:
+node-pre-gyp@^0.6.29, node-pre-gyp@^0.6.4:
   version "0.6.34"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.6.34.tgz#94ad1c798a11d7fc67381b50d47f8cc18d9799f7"
   dependencies:
@@ -2651,27 +2676,6 @@ node-pre-gyp@^0.6.29:
     semver "^5.3.0"
     tar "^2.2.1"
     tar-pack "^3.4.0"
-
-node-sass@^3.10.1:
-  version "3.13.1"
-  resolved "https://registry.yarnpkg.com/node-sass/-/node-sass-3.13.1.tgz#7240fbbff2396304b4223527ed3020589c004fc2"
-  dependencies:
-    async-foreach "^0.1.3"
-    chalk "^1.1.1"
-    cross-spawn "^3.0.0"
-    gaze "^1.0.0"
-    get-stdin "^4.0.1"
-    glob "^7.0.3"
-    in-publish "^2.0.0"
-    lodash.assign "^4.2.0"
-    lodash.clonedeep "^4.3.2"
-    meow "^3.7.0"
-    mkdirp "^0.5.1"
-    nan "^2.3.2"
-    node-gyp "^3.3.1"
-    npmlog "^4.0.0"
-    request "^2.61.0"
-    sass-graph "^2.1.1"
 
 node-sass@^4.5.3:
   version "4.5.3"
@@ -2695,6 +2699,15 @@ node-sass@^4.5.3:
     request "^2.79.0"
     sass-graph "^2.1.1"
     stdout-stream "^1.4.0"
+
+node-zopfli@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/node-zopfli/-/node-zopfli-2.0.2.tgz#a7a473ae92aaea85d4c68d45bbf2c944c46116b8"
+  dependencies:
+    commander "^2.8.1"
+    defaults "^1.0.2"
+    nan "^2.0.0"
+    node-pre-gyp "^0.6.4"
 
 "nopt@2 || 3", nopt@3.x:
   version "3.0.6"
@@ -3144,13 +3157,13 @@ postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0
     source-map "^0.5.6"
     supports-color "^3.2.3"
 
-postcss@^6.0.1, postcss@^6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-6.0.2.tgz#5c4fea589f0ac3b00caa75b1cbc3a284195b7e5d"
+postcss@^6.0.6:
+  version "6.0.6"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-6.0.6.tgz#bba4d58e884fc78c840d1539e10eddaabb8f73bd"
   dependencies:
-    chalk "^1.1.3"
+    chalk "^2.0.1"
     source-map "^0.5.6"
-    supports-color "^3.2.3"
+    supports-color "^4.1.0"
 
 prelude-ls@~1.1.2:
   version "1.1.2"
@@ -3360,7 +3373,7 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-request@2, request@^2.61.0, request@^2.79.0, request@^2.81.0:
+request@2, request@^2.79.0, request@^2.81.0:
   version "2.81.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.81.0.tgz#c6928946a0e06c5f8d6f8a9333469ffda46298a0"
   dependencies:
@@ -3462,9 +3475,11 @@ rollup-plugin-commonjs@^8.0.2:
     resolve "^1.1.7"
     rollup-pluginutils "^2.0.1"
 
-rollup-plugin-gzip@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-gzip/-/rollup-plugin-gzip-1.1.0.tgz#95cf719813b2c2141e1594a291f183c4aebc7efb"
+rollup-plugin-gzip@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-gzip/-/rollup-plugin-gzip-1.2.0.tgz#4b63c2fcfb7b5eefaf5ea187ef2b4496b2d418d0"
+  optionalDependencies:
+    node-zopfli "^2.0.2"
 
 rollup-plugin-node-resolve@^3.0.0:
   version "3.0.0"
@@ -3483,11 +3498,11 @@ rollup-plugin-replace@^1.1.1:
     minimatch "^3.0.2"
     rollup-pluginutils "^1.5.0"
 
-rollup-plugin-scss@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-scss/-/rollup-plugin-scss-0.2.0.tgz#69f58f565b2fa0e68c8e0e08681b11d3f8a2aee9"
+rollup-plugin-scss@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-scss/-/rollup-plugin-scss-0.3.0.tgz#ae91051f9dcb4c5a9c75dbbcdc5d994b0aefb9fd"
   dependencies:
-    node-sass "^3.10.1"
+    node-sass "^4.5.3"
     rollup-pluginutils "^1.5.2"
 
 rollup-plugin-uglify@^2.0.1:
@@ -3799,6 +3814,12 @@ supports-color@^3.1.0, supports-color@^3.2.3:
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-3.2.3.tgz#65ac0504b3954171d8a64946b2ae3cbb8a5f54f6"
   dependencies:
     has-flag "^1.0.0"
+
+supports-color@^4.0.0, supports-color@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-4.1.0.tgz#92cc14bb3dad8928ca5656c33e19a19f20af5c7a"
+  dependencies:
+    has-flag "^2.0.0"
 
 svgo@^0.7.0:
   version "0.7.2"
