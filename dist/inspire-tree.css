@@ -8,7 +8,8 @@
   transition: all 150ms linear;
   width: 20px; }
   .inspire-tree .btn:hover {
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); }
+    -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); }
   .inspire-tree .btn + .btn {
     margin-left: 5px; }
   .inspire-tree .btn.icon {
@@ -57,7 +58,8 @@
   .inspire-tree:focus {
     outline: none; }
   .inspire-tree, .inspire-tree * {
-    box-sizing: border-box; }
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box; }
   .inspire-tree ol {
     list-style: none;
     margin: 0;
@@ -111,7 +113,9 @@
     .inspire-tree .title::before {
       left: -5px;
       position: relative;
-      top: 5px;
+      top: 50%;
+      -webkit-transform: translateY(-50%);
+              transform: translateY(-50%);
       vertical-align: top; }
     .inspire-tree .title:focus {
       outline: none; }
