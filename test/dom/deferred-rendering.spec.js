@@ -14,8 +14,6 @@ describe('Deferred Rendering', function() {
                 limit: 2
             },
             data: function(node, resolve) {
-                var nodes = [];
-
                 resolve([{
                     text: 'Jaga'
                 }, {

@@ -15,8 +15,6 @@ describe('Deferred Rendering and Search', function() {
                 limit: 2
             },
             data: function(node, resolve) {
-                var nodes = [];
-
                 resolve([{
                     text: 'Jaga'
                 }, {
