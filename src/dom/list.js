@@ -40,8 +40,17 @@ export default class List extends Component {
 
         // If rendering deferred, chunk the nodes client-side
         if (this.props.dom.config.deferredRendering) {
-            // Slice the current nodes by this context's pagination
-            renderNodes = _.slice(this.props.nodes, 0, pagination.limit);
+            // Filter non-hidden/removed nodes and limit by this context's pagination
+            let count = 0;
+            renderNodes = this.props.nodes.filter((n) => {
+                let matches = !(n.hidden() || n.removed());
+
+                if (matches) {
+                    count++;
+                }
+
+                return count <= pagination.limit && matches;
+            });
         }
 
         // Render nodes as list items

@@ -23,11 +23,13 @@
             'inspire-tree-dom'
         ], function($, _, InspireTree, InspireTreeDOM) {
             var tree = new InspireTree({
+                pagination: { limit: 2 },
                 data: $.getJSON('sample-data/full.json')
             });
 
             new InspireTreeDOM(tree, {
-                target: '.tree'
+                target: '.tree',
+                deferredRendering: true
             });
 
             $('input').on('keyup', _.debounce(function(event) {

@@ -1,7 +1,8 @@
 'use strict';
 
-describe('Deferred Rendering', function() {
+describe('Deferred Rendering and Search', function() {
     var $tree;
+    var tree;
 
     before(function() {
         helpers.clearDOM();
@@ -9,7 +10,7 @@ describe('Deferred Rendering', function() {
 
         $tree = $('.tree');
 
-        var tree = new InspireTree({
+        tree = new InspireTree({
             pagination: {
                 limit: 2
             },
@@ -40,26 +41,25 @@ describe('Deferred Rendering', function() {
     });
 
     it('renders a limited subset', function() {
+        var $titles = $tree.find('.title');
+
         // Two visible nodes + "Load More"
-        expect($tree.find('.title')).to.have.length(3);
+        expect($titles).to.have.length(3);
+
+        expect($titles.eq(0).text()).to.equal('Jaga');
+        expect($titles.eq(1).text()).to.equal('Lion-O');
     });
 
-    it('renders larger subset on load more click', function(done) {
-        // Inferno doesn't like jquery's click
-        $tree.find('.load-more')[0].click();
+    it('paginates only nodes matching a search', function() {
+        tree.search('o');
 
-        // Four visible nodes + "Load More"
-        setTimeout(function() {
-            expect($tree.find('.title')).to.have.length(5);
-            done();
-        });
-    });
+        var $titles = $tree.find('.title');
 
-    it('renders full set on load more click', function() {
-        // Inferno doesn't like jquery's click
-        $tree.find('.load-more')[0].click();
+        // Two visible nodes + "Load More"
+        expect($titles).to.have.length(3);
 
-        expect($tree.find('.title')).to.have.length(6);
+        expect($titles.eq(0).text()).to.equal('Lion-O');
+        expect($titles.eq(1).text()).to.equal('Panthro');
     });
 
     after(helpers.clearDOM);
