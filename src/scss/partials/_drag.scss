@@ -1,11 +1,13 @@
-.inspire-tree {
-    /* ~~@@@~~~~~ Drag/Drop ~~~~~@@@~~ */
-    .dragging {
-        position: fixed;
-        z-index: 5000;
+.itree-droppable-active {
+    &.itree-droppable-target {
+        border: 1px solid #2dadc5;
     }
-}
 
-.itree-active-drop-target {
-    border: 1px solid #2dadc5;
+    &.itree-droppable-target-above {
+        border-top: 3px solid #2dadc5;
+    }
+
+    &.itree-droppable-target-below {
+        border-bottom: 3px solid #2dadc5;
+    }
 }

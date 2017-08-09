@@ -45,7 +45,7 @@ new InspireTreeDOM(tree, {
 
 - **autoLoadMore** - Automatically triggers "Load More" links on scroll. Used with deferrals.
 - **deferredRendering** - Only render nodes as the user clicks to display more. (See "Deferrals" section below.)
-- **dragTargets** - Array of other tree elements which accept drag/drop.
+- **dragAndDrop** - Enable drag and drop support.
 - **nodeHeight** - Height (in pixels) of your nodes. Used with deferrals, if `pagination.limit` not provided.
 - **showCheckboxes** - Show checkbox inputs.
 - **tabindex** - Define a tab index for the tree container (used for key nav).
@@ -56,8 +56,12 @@ new InspireTreeDOM(tree, {
 - **node.click** - `(MouseEvent event, TreeNode node)` - User clicked node.
 - **node.contextmenu** - `(MouseEvent event, TreeNode node)` - User right-clicked node.
 - **node.dblclick** - `(MouseEvent event, TreeNode node)` - User double-clicked node.
-- **node.dropin** - `(TreeNode node, MouseEvent event)` - Tree has received a new node via drop.
-- **node.dropout** - `(TreeNode node, Element elem, bool targetIsTree, MouseEvent event)` - Node dropped into a valid target.
+- **node.dragend** - `(DragEvent event)` - Drag end.
+- **node.dragenter** - `(DragEvent event)` - Drag enter.
+- **node.dragleave** - `(DragEvent event)` - Drag leave.
+- **node.dragover** - `(DragEvent event, int dir)` - Node drag over. dir will be -1 for "above", 0 for "into", 1 for "below".
+- **node.dragstart** - `(DragEvent event)` - Drag start.
+- **node.drop** - `(DragEvent event, TreeNode source, TreeNode target, int index)` - Node was dropped. If target null, node was dropped into the root context.
 
 #### Overriding DOM Events
 
@@ -90,3 +94,42 @@ Deferred Rendering progressively renders loaded nodes as the user scrolls or cli
 To work properly, you need to enable `deferredRendering` in the configuration.
 
 A "Load More" link will show at the bottom of each section which has more nodes than are initially allowed.
+
+
+### Drag and Drop
+
+Drag and drop supports:
+
+- Sorting nodes (dragging a node up or down at its current level).
+- Moving nodes to other hierarchies.
+- Moving nodes between tree instances.
+- Dragging into any other "droppable" element.
+
+#### Custom Drop Targets
+
+You can easily add drop support to *any* element. Internally we use the [native drag and drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API) so all you need are `dragover` and `drop`
+listeners.
+
+```js
+function onDragOver(event) {
+    event.preventDefault();
+}
+
+function onDrop(event) {
+    event.preventDefault();
+
+    // InspireTreeDOM passes two pieces of data:
+
+    // The tree ID, in case you have multiple trees...
+    var treeId = event.dataTransfer.getData('treeId');
+
+    // ... and a node ID. This node ID belongs to the node being dragged/dropped
+    var nodeId = event.dataTransfer.getData('nodeId');
+
+    // Remove the node (using its ID) from the tree
+    var exported = tree.node(nodeId).remove();
+
+    // Do whatever you want with it.
+    // console.log(exported.text);
+}
+```

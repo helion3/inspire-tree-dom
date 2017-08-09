@@ -3,6 +3,13 @@
     "children": [{
         "text": "Administrative",
         "children": [{
+            "text": "Joe Hidden",
+            "itree": {
+                "state": {
+                    "removed": true
+                }
+            }
+        }, {
             "age": 37,
             "eyeColor": "green",
             "text": "Ryan Berger"

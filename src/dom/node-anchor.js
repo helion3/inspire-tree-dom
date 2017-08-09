@@ -106,6 +106,7 @@ export default class NodeAnchor extends Component {
         }
 
         return (<a
+            data-uid={node.id}
             onBlur={this.blur.bind(this)}
             onClick={this.click.bind(this)}
             onContextMenu={this.contextMenu.bind(this)}

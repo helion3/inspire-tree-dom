@@ -7,6 +7,7 @@ declare module "inspire-tree-dom" {
     interface Config {
         autoLoadMore?: boolean;
         deferredRendering?: boolean;
+        dragAndDrop?: boolean;
         nodeHeight?: number;
         showCheckboxes?: boolean;
         dragTargets?: Array<string>;

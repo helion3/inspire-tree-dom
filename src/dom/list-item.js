@@ -85,6 +85,161 @@ export default class ListItem extends Component {
         return attributes;
     }
 
+    getTargetDirection(event) {
+        var clientY = event.clientY;
+        var targetRect = event.target.getBoundingClientRect();
+
+        var yThresholdForAbove = targetRect.top + (targetRect.height / 3);
+        var yThresholdForBelow = targetRect.bottom - (targetRect.height / 3);
+
+        var dir = 0;
+
+        if (clientY <= yThresholdForAbove) {
+            dir = -1;
+        }
+        else if (clientY >= yThresholdForBelow) {
+            dir = 1;
+        }
+
+        return dir;
+    }
+
+    onDragStart(event) {
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.dropEffect = 'move';
+
+        const nodeId = event.target.dataset.uid;
+        const node = this.props.dom._tree.node(nodeId);
+
+        event.dataTransfer.setData('treeId', node.tree().id);
+        event.dataTransfer.setData('nodeId', nodeId);
+
+        this.props.dom._tree.emit('node.dragstart', event);
+    }
+
+    onDragEnd(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.unhighlightTarget(event.target);
+
+        this.props.dom._tree.emit('node.dragend', event);
+    }
+
+    onDragEnter(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Highlight a new target
+        event.target.classList.add('itree-droppable-active');
+
+        this.props.dom._tree.emit('node.dragenter', event);
+    }
+
+    onDragLeave(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.unhighlightTarget(event.target);
+
+        this.props.dom._tree.emit('node.dragleave', event);
+    }
+
+    onDragOver(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Remove old classes
+        this.unhighlightTarget(event.target);
+
+        // Indicate active target
+        event.target.classList.add('itree-droppable-active');
+
+        var dir = this.getTargetDirection(event);
+
+        if (dir === -1) {
+            event.target.classList.add('itree-droppable-target-above');
+        }
+        else if (dir === 1) {
+            event.target.classList.add('itree-droppable-target-below');
+        }
+        else {
+            event.target.classList.add('itree-droppable-target');
+        }
+
+        this.props.dom._tree.emit('node.dragover', event, dir);
+    }
+
+    onDrop(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.unhighlightTarget(event.target);
+
+        // Get the data from our transfer
+        const treeId = event.dataTransfer.getData('treeId');
+        const nodeId = event.dataTransfer.getData('nodeId');
+
+        // Find the drop target
+        const targetId = event.target.dataset.uid;
+        const targetNode = this.props.dom._tree.node(targetId);
+
+        // Skip if the node is the target
+        if (nodeId === targetId) {
+            return;
+        }
+
+        // Get the source tree, it may be another instance
+        var sourceTree;
+        if (treeId === this.props.dom._tree.id) {
+            sourceTree = this.props.dom._tree;
+        }
+        else {
+            sourceTree = document.querySelector('[data-uid="' + treeId + '"]').inspireTree;
+        }
+
+        var node = sourceTree.node(nodeId).remove();
+
+        // Determine the insert direction
+        var dir = this.getTargetDirection(event);
+
+        // Get the index of the target node
+        var targetIndex = targetNode.context().indexOf(targetNode);
+
+        var newNode;
+        var newIndex;
+        if (dir === 0) {
+            // Add as a child
+            newNode = targetNode.addChild(node);
+
+            // Cache the new index
+            newIndex = targetNode.children.indexOf(newNode);
+
+            // Auto-expand
+            targetNode.expand();
+        }
+        else {
+            // Determine the new index
+            newIndex = dir === 1 ? ++targetIndex : targetIndex;
+
+            // Insert and cache the node
+            newNode = targetNode.context().insertAt(newIndex, node);
+        }
+
+        this.props.dom._tree.emit('node.drop', event, newNode, targetNode, newIndex);
+    }
+
+    unhighlightTarget(node) {
+        if (node) {
+            node.classList.remove(
+                'itree-droppable-target-above',
+                'itree-droppable-target-below',
+                'itree-droppable-target',
+                'itree-droppable-active'
+            );
+        }
+    }
+
     renderCheckbox() {
         let node = this.props.node;
 
@@ -142,7 +297,16 @@ export default class ListItem extends Component {
     render() {
         let node = this.props.node;
 
-        let li = (<li {...this.getAttributes()} ref={domNode => this.props.node.itree.ref = domNode}>
+        let li = (<li
+            draggable={this.props.dom.config.dragAndDrop}
+            onDragEnd={this.onDragEnd.bind(this)}
+            onDragEnter={this.onDragEnter.bind(this)}
+            onDragLeave={this.onDragLeave.bind(this)}
+            onDragOver={this.onDragOver.bind(this)}
+            onDragStart={this.onDragStart.bind(this)}
+            onDrop={this.onDrop.bind(this)}
+            {...this.getAttributes()}
+            ref={domNode => this.node = this.props.node.itree.ref = domNode}>
             { this.renderEditToolbar() }
             <div className='title-wrap'>
                 { this.renderToggle() }

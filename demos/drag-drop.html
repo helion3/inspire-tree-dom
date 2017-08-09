@@ -4,65 +4,95 @@
         <meta charset="utf-8">
         <title>InspireTree</title>
         <link rel="stylesheet" href="../build/inspire-tree-light.css" />
+        <link rel="stylesheet" href="demo.css" />
         <style>
-            body > div {
-                float: left;
-                margin-right: 20px;
+            .target {
+                background: white;
+                width: 200px;
+                height: 100px;
             }
 
-            .drop-target {
-                box-sizing: border-box;
-                border: 1px solid #ccc;
+            body {
+                display: flex;
+                flex-direction: row;
+            }
+
+            body > div {
                 padding: 20px;
-                height: 402px;
-                width: 302px;
             }
         </style>
-        <link rel="stylesheet" href="../build/inspire-tree.css" />
     </head>
     <body>
-        <div class="source-tree"></div>
-        <div class="dest-tree"></div>
-        <div class="drop-target">a non-tree drop target</div>
+        <div>
+            <p>Drag and drop!</p>
+            <div class="tree"></div>
+        </div>
+        <div>
+            <p>Drag and drop between trees!</p>
+            <div class="tree2"></div>
+        </div>
+        <div>
+            <p>Custom drop targets!</p>
+            <ol class="target" ondragover="onDragOver(event)" ondrop="onDrop(event)"></ol>
+        </div>
     </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
     <script src="require.config.js"></script>
     <script>
         require([
             'jquery',
-            'lodash',
             'inspire-tree',
             'inspire-tree-dom'
-        ], function($, _, InspireTree, InspireTreeDOM) {
-            var sourceTree = new InspireTree({
+        ], function($, InspireTree, InspireTreeDOM) {
+            window.onDragOver = function(event) {
+                event.preventDefault();
+            }
+
+            // Example custom logic for non-tree drop targets
+            window.onDrop = function(event) {
+                event.preventDefault();
+
+                // Get the data from the drag transfer
+                var treeId = event.dataTransfer.getData('treeId');
+                var nodeId = event.dataTransfer.getData('nodeId');
+
+                // Find the owning tree. You can skip this step if you only have one instance available
+                var tree = InspireTreeDOM.getTreeById(treeId);
+
+                // Remove the node from its previous context
+                var exported = tree.node(nodeId).remove();
+
+                // For demo purposes only, add the node text here.
+                var li = document.createElement('li');
+                li.innerText = exported.text;
+                event.target.appendChild(li);
+            }
+
+            var tree = new InspireTree({
                 data: $.getJSON('sample-data/full.json')
             });
 
-            new InspireTreeDOM(sourceTree, {
-                target: '.source-tree',
-                dragTargets: [
-                    '.dest-tree',
-                    '.drop-target'
-                ]
+            var dom = new InspireTreeDOM(tree, {
+                target: '.tree',
+                dragAndDrop: true
             });
 
-            sourceTree.on('node.dropout', function(node, target, targetIsTree) {
-                node.softRemove();
-
-                if (targetIsTree) {
-                    alert('dropped ' + node.text + ' into another tree');
-                } else {
-                    alert('dropped ' + node.text + ' into a div');
-                }
-            });
-
-            var destTree = new InspireTree({
+            // Create a second tree, allowing drag and drop between tree instances
+            var tree2 = new InspireTree({
                 data: []
             });
 
-            new InspireTreeDOM(destTree, {
-                target: '.dest-tree'
-            })
+            var dom2 = new InspireTreeDOM(tree2, {
+                target: '.tree2',
+                dragAndDrop: true
+            });
+
+            // Listen to drop events
+            [tree, tree2].forEach(function(t) {
+                t.on('node.drop', function(event, node, target, index) {
+                    console.log('node.drop', event, node, target, index);
+                });
+            });
         });
     </script>
 </html>

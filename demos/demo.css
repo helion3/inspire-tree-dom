@@ -63,3 +63,7 @@ body > div > div {
     min-height: 400px;
     min-width: 300px;
 }
+
+.inspire-tree.itree-droppable-active {
+    border: 1px solid #2dadc5;
+}

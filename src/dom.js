@@ -36,7 +36,7 @@ export default class InspireDOM {
         this.config = _.defaults({}, opts, {
             autoLoadMore: true,
             deferredRendering: false,
-            dragTargets: false,
+            dragAndDrop: false,
             nodeHeight: 25,
             showCheckboxes: false,
             tabindex: -1,
@@ -89,6 +89,8 @@ export default class InspireDOM {
             throw new Error('No valid element to attach to.');
         }
 
+        this.$target.setAttribute('data-uid', this._tree.id);
+
         // Set classnames
         let classNames = this.$target.className.split(' ');
         classNames.push('inspire-tree');
@@ -107,25 +109,12 @@ export default class InspireDOM {
         // Handle keyboard interaction
         this.$target.addEventListener('keyup', this.keyboardListener.bind(this));
 
-        let dragTargetSelectors = this.config.dragTargets;
-        if (!_.isEmpty(dragTargetSelectors)) {
-            _.each(dragTargetSelectors, (selector) => {
-                let dropTarget = this.getElement(selector);
-
-                if (dropTarget) {
-                    this.dropTargets.push(dropTarget);
-                }
-                else {
-                    throw new Error('No valid element found for drop target ' + selector);
-                }
-            });
-        }
-
-        this.isDragDropEnabled = this.dropTargets.length > 0;
-
-        if (this.isDragDropEnabled) {
-            document.addEventListener('mouseup', this.mouseUpListener.bind(this));
-            document.addEventListener('mousemove', this.mouseMoveListener.bind(this));
+        // Drag and drop listeners
+        if (this.config.dragAndDrop) {
+            this.$target.addEventListener('dragenter', this.onDragEnter.bind(this), false);
+            this.$target.addEventListener('dragleave', this.onDragLeave.bind(this), false);
+            this.$target.addEventListener('dragover', this.onDragOver.bind(this), false);
+            this.$target.addEventListener('drop', this.onDrop.bind(this), false);
         }
 
         // Sync browser focus to focus state
@@ -168,34 +157,10 @@ export default class InspireDOM {
     }
 
     /**
-     * Creates a draggable element by cloning a target,
-     * registers a listener for mousemove.
-     *
-     * @private
-     * @param {HTMLElement} element DOM Element.
-     * @param {Event} event Click event to use.
-     * @return {void}
-     */
-    createDraggableElement(element, event) {
-        this.$dragNode = this.nodeFromTitleDOMElement(element);
-
-        let rect = element.getBoundingClientRect();
-        let diffX = event.clientX - rect.left;
-        let diffY = event.clientY - rect.top;
-
-        this.dragHandleOffset = { left: diffX, top: diffY };
-
-        this.$dragElement = element.cloneNode(true);
-        this.$dragElement.className += ' dragging';
-        this.$dragElement.style.top = rect.top + 'px';
-        this.$dragElement.style.left = rect.left + 'px';
-        this.$target.appendChild(this.$dragElement);
-    }
-
-    /**
      * Get an HTMLElement through various means:
      * An element, jquery object, or a selector.
      *
+     * @category DOM
      * @private
      * @param {mixed} target Element, jQuery selector, selector.
      * @return {HTMLElement} Matching element.
@@ -222,7 +187,9 @@ export default class InspireDOM {
     /**
      * Helper method to find a scrollable ancestor element.
      *
-     * @param  {HTMLElement} $element Starting element.
+     * @category DOM
+     * @private
+     * @param {HTMLElement} $element Starting element.
      * @return {HTMLElement} Scrollable element.
      */
     getScrollableAncestor($element) {
@@ -237,8 +204,23 @@ export default class InspireDOM {
     }
 
     /**
+     * Get a tree instance based on an ID.
+     *
+     * @category DOM
+     * @param {string} id Tree ID.
+     * @return {InspireTree} Tree instance.
+     */
+    static getTreeById(id) {
+        var element = document.querySelector('[data-uid="' + id + '"]');
+        if (element) {
+            return element.inspireTree;
+        }
+    }
+
+    /**
      * Listen to keyboard event for navigation.
      *
+     * @category DOM
      * @private
      * @param {Event} event Keyboard event.
      * @return {void}
@@ -270,86 +252,9 @@ export default class InspireDOM {
     }
 
     /**
-     * Listener for mouse move events for drag and drop.
-     * Is removed automatically on mouse up.
-     *
-     * @private
-     * @param {Event} event Mouse move event.
-     * @return {void}
-     */
-    mouseMoveListener(event) {
-        if (this.isMouseHeld && !this.$dragElement) {
-            this.createDraggableElement(event.target, event);
-        }
-        else if (this.$dragElement) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            let x = event.clientX - this.dragHandleOffset.left;
-            let y = event.clientY - this.dragHandleOffset.top;
-
-            this.$dragElement.style.left = x + 'px';
-            this.$dragElement.style.top = y + 'px';
-
-            let validTarget;
-            _.each(this.dropTargets, (target) => {
-                let rect = target.getBoundingClientRect();
-
-                if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
-                    validTarget = target;
-                    return false;
-                }
-            });
-
-            // If new target found for the first time
-            if (!this.$activeDropTarget && validTarget && validTarget.className.indexOf('itree-active-drop-target') === -1) {
-                validTarget.className += ' itree-active-drop-target';
-            }
-
-            this.$activeDropTarget = validTarget;
-        }
-    }
-
-    /**
-     * Handle mouse up events for dragged elements.
-     *
-     * @param {MouseEvent} event Mouse event.
-     * @return {void}
-     */
-    mouseUpListener(event) {
-        this.isMouseHeld = false;
-
-        if (this.$dragElement) {
-            this.$dragElement.parentNode.removeChild(this.$dragElement);
-
-            if (this.$activeDropTarget) {
-                let targetIsTree = _.isFunction(_.get(this.$activeDropTarget, 'inspireTree.addNode'));
-
-                // Notify that the node was "dropped out" of this tree
-                this._tree.emit('node.dropout', this.$dragNode, this.$activeDropTarget, targetIsTree, event);
-
-                // If drop target supports the addNode method, invoke it
-                if (targetIsTree) {
-                    let newNode = this.$activeDropTarget.inspireTree.addNode(this.$dragNode.copyHierarchy().toObject());
-
-                    // Notify that the node was "dropped out"
-                    this.$activeDropTarget.inspireTree.emit('node.dropin', newNode, event);
-                }
-            }
-        }
-
-        if (this.$activeDropTarget) {
-            this.$activeDropTarget.className = this.$activeDropTarget.className.replace('itree-active-drop-target', '');
-        }
-
-        this.$dragNode = null;
-        this.$dragElement = null;
-        this.$activeDropTarget = null;
-    }
-
-    /**
      * Move select down the visible tree from a starting node.
      *
+     * @category DOM
      * @private
      * @param {object} startingNode Node object.
      * @return {void}
@@ -364,6 +269,7 @@ export default class InspireDOM {
     /**
      * Move select up the visible tree from a starting node.
      *
+     * @category DOM
      * @private
      * @param {object} startingNode Node object.
      * @return {void}
@@ -378,6 +284,7 @@ export default class InspireDOM {
     /**
      * Helper method for obtaining the data-uid from a DOM element.
      *
+     * @category DOM
      * @private
      * @param {HTMLElement} element HTML Element.
      * @return {object} Node object
@@ -385,6 +292,73 @@ export default class InspireDOM {
     nodeFromTitleDOMElement(element) {
         let uid = element.parentNode.parentNode.getAttribute('data-uid');
         return this._tree.node(uid);
+    }
+
+    /**
+     * Drag enter listener.
+     *
+     * @category DOM
+     * @private
+     * @param {DragEvent} event Drag enter.
+     * @return {void}
+     */
+    onDragEnter(event) {
+        event.preventDefault();
+
+        event.target.classList.add('itree-droppable-active');
+    }
+
+    /**
+     * Drag leave listener.
+     *
+     * @category DOM
+     * @private
+     * @param {DragEvent} event Drag leave.
+     * @return {void}
+     */
+    onDragLeave(event) {
+        event.preventDefault();
+
+        this.unhighlightTarget(event.target);
+    }
+
+    /**
+     * Drag over listener.
+     *
+     * @category DOM
+     * @private
+     * @param {DragEvent} event Drag over.
+     * @return {void}
+     */
+    onDragOver(event) {
+        event.preventDefault();
+    }
+
+    /**
+     * Drop listener.
+     *
+     * @category DOM
+     * @private
+     * @param {DragEvent} event Dropped.
+     * @return {void}
+     */
+    onDrop(event) {
+        event.preventDefault();
+
+        let treeId = event.dataTransfer.getData('treeId');
+        let nodeId = event.dataTransfer.getData('nodeId');
+
+        // Find the tree
+        const tree = InspireDOM.getTreeById(treeId);
+
+        // Remove the node from its previous context
+        let exported = tree.node(nodeId).remove();
+
+        // Add the node to this tree/level
+        var newNode = this._tree.addNode(exported);
+        var newIndex = this._tree.indexOf(newNode);
+
+        this._tree.emit('node.drop', event, newNode, null, newIndex);
     }
 
     /**
@@ -447,6 +421,20 @@ export default class InspireDOM {
 
         if ($selected && this.$scrollLayer) {
             this.$scrollLayer.scrollTop = $selected.offsetTop;
+        }
+    }
+
+    /**
+     * Remove highlight class.
+     *
+     * @category DOM
+     * @private
+     * @param {HTMLElement} node Target element.
+     * @return {void}
+     */
+    unhighlightTarget(node) {
+        if (node) {
+            node.classList.remove('itree-droppable-active');
         }
     }
 }
