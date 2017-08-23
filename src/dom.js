@@ -316,7 +316,7 @@ export default class InspireDOM {
      *
      * @return {void}
      */
-    mouseUpListener() {
+    mouseUpListener(event) {
         this.isMouseHeld = false;
 
         if (this.$dragElement) {
@@ -326,14 +326,14 @@ export default class InspireDOM {
                 let targetIsTree = _.isFunction(_.get(this.$activeDropTarget, 'inspireTree.addNode'));
 
                 // Notify that the node was "dropped out" of this tree
-                this._tree.emit('node.dropout', this.$dragNode, this.$activeDropTarget, targetIsTree);
+                this._tree.emit('node.dropout', this.$dragNode, this.$activeDropTarget, targetIsTree, event);
 
                 // If drop target supports the addNode method, invoke it
                 if (targetIsTree) {
                     let newNode = this.$activeDropTarget.inspireTree.addNode(this.$dragNode.copyHierarchy().toObject());
 
                     // Notify that the node was "dropped out"
-                    this.$activeDropTarget.inspireTree.emit('node.dropin', newNode);
+                    this.$activeDropTarget.inspireTree.emit('node.dropin', newNode, event);
                 }
             }
         }

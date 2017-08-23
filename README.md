@@ -53,11 +53,11 @@ new InspireTreeDOM(tree, {
 
 #### Event List
 
-- **node.click** - `(Event event, TreeNode node)` - User clicked node.
-- **node.contextmenu** - `(Event event, TreeNode node)` - User right-clicked node.
-- **node.dblclick** - `(Event event, TreeNode node)` - User double-clicked node.
-- **node.dropin** - `(TreeNode node)` - Tree has received a new node via drop.
-- **node.dropout** - `(TreeNode node), (Element elem)` - Node dropped into a valid target.
+- **node.click** - `(MouseEvent event, TreeNode node)` - User clicked node.
+- **node.contextmenu** - `(MouseEvent event, TreeNode node)` - User right-clicked node.
+- **node.dblclick** - `(MouseEvent event, TreeNode node)` - User double-clicked node.
+- **node.dropin** - `(TreeNode node, MouseEvent event)` - Tree has received a new node via drop.
+- **node.dropout** - `(TreeNode node, Element elem, bool targetIsTree, MouseEvent event)` - Node dropped into a valid target.
 
 #### Overriding DOM Events
 
