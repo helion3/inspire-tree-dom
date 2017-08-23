@@ -314,6 +314,7 @@ export default class InspireDOM {
     /**
      * Handle mouse up events for dragged elements.
      *
+     * @param {MouseEvent} event Mouse event.
      * @return {void}
      */
     mouseUpListener(event) {
