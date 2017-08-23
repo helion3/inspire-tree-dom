@@ -1,5 +1,5 @@
 /* Inspire Tree DOM
- * @version 2.0.1
+ * @version 2.0.2
  * https://github.com/helion3/inspire-tree-dom
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -11,7 +11,7 @@
 	(global.InspireTreeDOM = factory(global._,global.InspireTree));
 }(this, (function (_$1,InspireTree) { 'use strict';
 
-InspireTree = InspireTree && 'default' in InspireTree ? InspireTree['default'] : InspireTree;
+InspireTree = InspireTree && InspireTree.hasOwnProperty('default') ? InspireTree['default'] : InspireTree;
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -25,10 +25,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /**
  * @module Inferno-Shared
  */ /** TypeDoc Comment */
-var NO_OP = '$NO_OP';
-var ERROR_MSG = 'a runtime error occured! Use Inferno in development environment to find the error.';
+var NO_OP = "$NO_OP";
+var ERROR_MSG = "a runtime error occured! Use Inferno in development environment to find the error.";
 // This should be boolean and not reference to window.document
-var isBrowser = !!(typeof window !== 'undefined' && window.document);
+var isBrowser = !!(typeof window !== "undefined" && window.document);
 // this is MUCH faster than .constructor === Array and instanceof Array
 // in Node 7 and the later versions of V8, slower in older versions though
 var isArray = Array.isArray;
@@ -37,7 +37,7 @@ function isStatefulComponent(o) {
 }
 function isStringOrNumber(o) {
     var type = typeof o;
-    return type === 'string' || type === 'number';
+    return type === "string" || type === "number";
 }
 function isNullOrUndef(o) {
     return isUndefined(o) || isNull(o);
@@ -46,13 +46,13 @@ function isInvalid(o) {
     return isNull(o) || o === false || isTrue(o) || isUndefined(o);
 }
 function isFunction$$1(o) {
-    return typeof o === 'function';
+    return typeof o === "function";
 }
 function isString$$1(o) {
-    return typeof o === 'string';
+    return typeof o === "string";
 }
 function isNumber(o) {
-    return typeof o === 'number';
+    return typeof o === "number";
 }
 function isNull(o) {
     return o === null;
@@ -64,7 +64,7 @@ function isUndefined(o) {
     return o === void 0;
 }
 function isObject$$1(o) {
-    return typeof o === 'object';
+    return typeof o === "object";
 }
 function throwError(message) {
     if (!message) {
@@ -96,7 +96,7 @@ Lifecycle.prototype.trigger = function trigger() {
     var listeners = this.listeners;
     var listener;
     // We need to remove current listener from array when calling it, because more listeners might be added
-    while (listener = listeners.shift()) {
+    while ((listener = listeners.shift())) {
         listener();
     }
 };
@@ -145,6 +145,7 @@ booleanProps.add("novalidate");
 booleanProps.add("hidden");
 booleanProps.add("autoFocus");
 booleanProps.add("selected");
+booleanProps.add("indeterminate");
 var namespaces = new Map();
 namespaces.set("xlink:href", xlinkNS);
 namespaces.set("xlink:arcrole", xlinkNS);
@@ -213,7 +214,9 @@ delegatedEvents.add("onKeyPress");
 /**
  * @module Inferno
  */ /** TypeDoc Comment */
-var isiOS = isBrowser && !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
+var isiOS = isBrowser &&
+    !!navigator.platform &&
+    /iPad|iPhone|iPod/.test(navigator.platform);
 var delegatedEvents$1 = new Map();
 function handleEvent(name, lastEvent, nextEvent, dom) {
     var delegatedRoots = delegatedEvents$1.get(name);
@@ -224,7 +227,7 @@ function handleEvent(name, lastEvent, nextEvent, dom) {
             delegatedEvents$1.set(name, delegatedRoots);
         }
         if (!lastEvent) {
-            if (isiOS && name === 'onClick') {
+            if (isiOS && name === "onClick") {
                 trapClickOnNonInteractiveElement(dom);
             }
         }
@@ -241,31 +244,31 @@ function handleEvent(name, lastEvent, nextEvent, dom) {
         }
     }
 }
-function dispatchEvent(event, target, items, count, isClick, eventData) {
-    var eventsToTrigger = items.get(target);
-    if (eventsToTrigger) {
-        count--;
-        // linkEvent object
-        eventData.dom = target;
-        if (eventsToTrigger.event) {
-            eventsToTrigger.event(eventsToTrigger.data, event);
+function dispatchEvents(event, target, items, count, isClick, eventData) {
+    var dom = target;
+    while (count > 0) {
+        var eventsToTrigger = items.get(dom);
+        if (eventsToTrigger) {
+            count--;
+            // linkEvent object
+            eventData.dom = dom;
+            if (eventsToTrigger.event) {
+                eventsToTrigger.event(eventsToTrigger.data, event);
+            }
+            else {
+                eventsToTrigger(event);
+            }
+            if (event.cancelBubble) {
+                return;
+            }
         }
-        else {
-            eventsToTrigger(event);
-        }
-        if (event.cancelBubble) {
-            return;
-        }
-    }
-    if (count > 0) {
-        var parentDom = target.parentNode;
+        dom = dom.parentNode;
         // Html Nodes can be nested fe: span inside button in that scenario browser does not handle disabled attribute on parent,
         // because the event listener is on document.body
         // Don't process clicks on disabled elements
-        if (parentDom === null || (isClick && parentDom.nodeType === 1 && parentDom.disabled)) {
+        if (dom === null || (isClick && dom.disabled)) {
             return;
         }
-        dispatchEvent(event, parentDom, items, count, isClick, eventData);
     }
 }
 function normalizeEventName(name) {
@@ -285,15 +288,17 @@ function attachEventToDocument(name, delegatedRoots) {
                 dom: document
             };
             try {
-                Object.defineProperty(event, 'currentTarget', {
+                Object.defineProperty(event, "currentTarget", {
                     configurable: true,
                     get: function get$$1() {
                         return eventData.dom;
                     }
                 });
             }
-            catch (e) { }
-            dispatchEvent(event, event.target, delegatedRoots.items, count, event.type === 'click', eventData);
+            catch (e) {
+                /* safari7 and phantomJS will crash */
+            }
+            dispatchEvents(event, event.target, delegatedRoots.items, count, event.type === "click", eventData);
         }
     };
     document.addEventListener(normalizeEventName(name), docEvent);
@@ -318,7 +323,7 @@ function trapClickOnNonInteractiveElement(dom) {
  * @module Inferno
  */ /** TypeDoc Comment */
 function isCheckedType(type) {
-    return type === 'checkbox' || type === 'radio';
+    return type === "checkbox" || type === "radio";
 }
 function onTextInputChange(e) {
     var vNode = this.vNode;
@@ -409,13 +414,13 @@ function applyValue(nextPropsOrEmpty, dom) {
     var defaultValue = nextPropsOrEmpty.defaultValue;
     var hasValue = !isNullOrUndef(value);
     if (type && type !== dom.type) {
-        dom.setAttribute('type', type);
+        dom.setAttribute("type", type);
     }
     if (multiple && multiple !== dom.multiple) {
         dom.multiple = multiple;
     }
     if (!isNullOrUndef(defaultValue) && !hasValue) {
-        dom.defaultValue = defaultValue + '';
+        dom.defaultValue = defaultValue + "";
     }
     if (isCheckedType(type)) {
         if (hasValue) {
@@ -441,7 +446,7 @@ function applyValue(nextPropsOrEmpty, dom) {
  */ /** TypeDoc Comment */
 function updateChildOptionGroup(vNode, value) {
     var type = vNode.type;
-    if (type === 'optgroup') {
+    if (type === "optgroup") {
         var children = vNode.children;
         if (isArray(children)) {
             for (var i = 0, len = children.length; i < len; i++) {
@@ -461,7 +466,8 @@ function updateChildOption(vNode, value) {
     var dom = vNode.dom;
     // we do this as multiple may have changed
     dom.value = props.value;
-    if ((isArray(value) && value.indexOf(props.value) !== -1) || props.value === value) {
+    if ((isArray(value) && value.indexOf(props.value) !== -1) ||
+        props.value === value) {
         dom.selected = true;
     }
     else if (!isNullOrUndef(value) || !isNullOrUndef(props.selected)) {
@@ -591,9 +597,9 @@ function applyValue$2(nextPropsOrEmpty, dom, mounting) {
                     dom.value = defaultValue;
                 }
             }
-            else if (domValue !== '') {
-                dom.defaultValue = '';
-                dom.value = '';
+            else if (domValue !== "") {
+                dom.defaultValue = "";
+                dom.value = "";
             }
         }
     }
@@ -626,7 +632,9 @@ function processElement(flags, vNode, dom, nextPropsOrEmpty, mounting, isControl
     }
 }
 function isControlledFormElement(nextPropsOrEmpty) {
-    return (nextPropsOrEmpty.type && isCheckedType(nextPropsOrEmpty.type)) ? !isNullOrUndef(nextPropsOrEmpty.checked) : !isNullOrUndef(nextPropsOrEmpty.value);
+    return nextPropsOrEmpty.type && isCheckedType(nextPropsOrEmpty.type)
+        ? !isNullOrUndef(nextPropsOrEmpty.checked)
+        : !isNullOrUndef(nextPropsOrEmpty.value);
 }
 
 /**
@@ -674,7 +682,7 @@ function hydrateComponent(vNode, dom, lifecycle, context, isSVG, isClass) {
         hydrate(input$1, dom, lifecycle, context, isSVG);
         vNode.children = input$1;
         vNode.dom = input$1.dom;
-        mountFunctionalComponentCallbacks(ref, dom, lifecycle);
+        mountFunctionalComponentCallbacks(props, ref, dom, lifecycle);
     }
     return dom;
 }
@@ -954,6 +962,7 @@ function unmountComponent(vNode, parentDom, lifecycle, canRecycle, isRecycling) 
     var instance = vNode.children;
     var flags = vNode.flags;
     var isStatefulComponent$$1 = flags & 4;
+    var props = vNode.props || EMPTY_OBJ;
     var ref = vNode.ref;
     var dom = vNode.dom;
     if (!isRecycling) {
@@ -978,17 +987,13 @@ function unmountComponent(vNode, parentDom, lifecycle, canRecycle, isRecycling) 
         else {
             if (!isNullOrUndef(ref)) {
                 if (!isNullOrUndef(ref.onComponentWillUnmount)) {
-                    ref.onComponentWillUnmount(dom);
+                    ref.onComponentWillUnmount(dom, props);
                 }
             }
             unmount(instance, null, lifecycle, false, isRecycling);
         }
     }
     if (parentDom) {
-        var lastInput = instance._lastInput;
-        if (isNullOrUndef(lastInput)) {
-            lastInput = instance;
-        }
         removeChild(parentDom, dom);
     }
     if (options.recyclingEnabled &&
@@ -1760,7 +1765,7 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
                         }
                         nextPos = pos + 1;
                         nextNode = nextPos < b.length ? b[nextPos].dom : null;
-                        insertOrAppend(dom, mount(node, dom, lifecycle, context, isSVG), nextNode);
+                        insertOrAppend(dom, mount(node, null, lifecycle, context, isSVG), nextNode);
                     }
                     else {
                         if (j < 0 || i !== seq[j]) {
@@ -1934,9 +1939,10 @@ function patchStyle(lastAttrValue, nextAttrValue, dom) {
             // do not add a hasOwnProperty check here, it affects performance
             value = nextAttrValue[style];
             if (value !== lastAttrValue[style]) {
-                domStyle[style] = !isNumber(value) || isUnitlessNumber.has(style)
-                    ? value
-                    : value + "px";
+                domStyle[style] =
+                    !isNumber(value) || isUnitlessNumber.has(style)
+                        ? value
+                        : value + "px";
             }
         }
         for (style in lastAttrValue) {
@@ -1948,9 +1954,8 @@ function patchStyle(lastAttrValue, nextAttrValue, dom) {
     else {
         for (style in nextAttrValue) {
             value = nextAttrValue[style];
-            domStyle[style] = !isNumber(value) || isUnitlessNumber.has(style)
-                ? value
-                : value + "px";
+            domStyle[style] =
+                !isNumber(value) || isUnitlessNumber.has(style) ? value : value + "px";
         }
     }
 }
@@ -2009,18 +2014,19 @@ function mountVoid(vNode, parentDom) {
     return dom;
 }
 function mountElement(vNode, parentDom, lifecycle, context, isSVG) {
+    var dom;
     if (options.recyclingEnabled) {
-        var dom$1 = recycleElement(vNode, lifecycle, context, isSVG);
-        if (!isNull(dom$1)) {
+        dom = recycleElement(vNode, lifecycle, context, isSVG);
+        if (!isNull(dom)) {
             if (!isNull(parentDom)) {
-                appendChild(parentDom, dom$1);
+                appendChild(parentDom, dom);
             }
-            return dom$1;
+            return dom;
         }
     }
     var flags = vNode.flags;
     isSVG = isSVG || (flags & 128 /* SvgElement */) > 0;
-    var dom = documentCreateElement(vNode.type, isSVG);
+    dom = documentCreateElement(vNode.type, isSVG);
     var children = vNode.children;
     var props = vNode.props;
     var className = vNode.className;
@@ -2083,19 +2089,19 @@ function mountArrayChildren(children, dom, lifecycle, context, isSVG) {
     }
 }
 function mountComponent(vNode, parentDom, lifecycle, context, isSVG, isClass) {
+    var dom;
     if (options.recyclingEnabled) {
-        var dom$1 = recycleComponent(vNode, lifecycle, context, isSVG);
-        if (!isNull(dom$1)) {
+        dom = recycleComponent(vNode, lifecycle, context, isSVG);
+        if (!isNull(dom)) {
             if (!isNull(parentDom)) {
-                appendChild(parentDom, dom$1);
+                appendChild(parentDom, dom);
             }
-            return dom$1;
+            return dom;
         }
     }
     var type = vNode.type;
     var props = vNode.props || EMPTY_OBJ;
     var ref = vNode.ref;
-    var dom;
     if (isClass) {
         var instance = createClassComponentInstance(vNode, type, props, context, isSVG, lifecycle);
         var input = instance._lastInput;
@@ -2114,7 +2120,7 @@ function mountComponent(vNode, parentDom, lifecycle, context, isSVG, isClass) {
         var input$1 = createFunctionalComponentInput(vNode, type, props, context);
         vNode.dom = dom = mount(input$1, null, lifecycle, context, isSVG);
         vNode.children = input$1;
-        mountFunctionalComponentCallbacks(ref, dom, lifecycle);
+        mountFunctionalComponentCallbacks(props, ref, dom, lifecycle);
         if (!isNull(parentDom)) {
             appendChild(parentDom, dom);
         }
@@ -2145,13 +2151,13 @@ function mountClassComponentCallbacks(vNode, ref, instance, lifecycle) {
         }));
     }
 }
-function mountFunctionalComponentCallbacks(ref, dom, lifecycle) {
+function mountFunctionalComponentCallbacks(props, ref, dom, lifecycle) {
     if (ref) {
         if (!isNullOrUndef(ref.onComponentWillMount)) {
-            ref.onComponentWillMount();
+            ref.onComponentWillMount(props);
         }
         if (!isNullOrUndef(ref.onComponentDidMount)) {
-            lifecycle.addListener((function () { return ref.onComponentDidMount(dom); }));
+            lifecycle.addListener((function () { return ref.onComponentDidMount(dom, props); }));
         }
     }
 }
@@ -2528,9 +2534,10 @@ function cloneVNode(vNodeToClone, props) {
             newVNode.children = null;
         }
         else if (flags & 3970 /* Element */) {
-            children = props && !isUndefined(props.children)
-                ? props.children
-                : vNodeToClone.children;
+            children =
+                props && !isUndefined(props.children)
+                    ? props.children
+                    : vNodeToClone.children;
             newVNode = createVNode(flags, vNodeToClone.type, className, children, !vNodeToClone.props && !props
                 ? EMPTY_OBJ
                 : combineFrom(vNodeToClone.props, props), key, ref, false);
@@ -2743,7 +2750,7 @@ function linkEvent(data, event) {
  * @module Inferno
  */ /** TypeDoc Comment */
 /* tslint:disable:object-literal-sort-keys */
-var version = "3.6.4";
+var version = "3.7.1";
 // we duplicate it so it plays nicely with different module loading systems
 var index = {
     EMPTY_OBJ: EMPTY_OBJ,
@@ -2816,16 +2823,16 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /**
  * @module Inferno-Shared
  */ /** TypeDoc Comment */
-var NO_OP = '$NO_OP';
-var ERROR_MSG = 'a runtime error occured! Use Inferno in development environment to find the error.';
+var NO_OP = "$NO_OP";
+var ERROR_MSG = "a runtime error occured! Use Inferno in development environment to find the error.";
 // This should be boolean and not reference to window.document
-var isBrowser = !!(typeof window !== 'undefined' && window.document);
+var isBrowser = !!(typeof window !== "undefined" && window.document);
 // this is MUCH faster than .constructor === Array and instanceof Array
 // in Node 7 and the later versions of V8, slower in older versions though
 var isArray = Array.isArray;
 function isStringOrNumber(o) {
     var type = typeof o;
-    return type === 'string' || type === 'number';
+    return type === "string" || type === "number";
 }
 function isNullOrUndef(o) {
     return isUndefined(o) || isNull(o);
@@ -2834,7 +2841,7 @@ function isInvalid(o) {
     return isNull(o) || o === false || isTrue(o) || isUndefined(o);
 }
 function isFunction$$1(o) {
-    return typeof o === 'function';
+    return typeof o === "function";
 }
 function isNull(o) {
     return o === null;
@@ -2973,7 +2980,8 @@ function applyState(component, force, callback) {
         }
         var lastInput = component._lastInput;
         var vNode = component._vNode;
-        var parentDom = (lastInput.dom && lastInput.dom.parentNode) || (lastInput.dom = vNode.dom);
+        var parentDom = (lastInput.dom && lastInput.dom.parentNode) ||
+            (lastInput.dom = vNode.dom);
         component._lastInput = nextInput;
         if (didUpdate) {
             var childContext;
@@ -2996,7 +3004,7 @@ function applyState(component, force, callback) {
                 index.options.afterUpdate(vNode);
             }
         }
-        var dom = vNode.dom = nextInput.dom;
+        var dom = (vNode.dom = nextInput.dom);
         if (index.options.findDOMNodeEnabled) {
             index.internal_DOMNodeMap.set(component, nextInput.dom);
         }
@@ -3053,7 +3061,10 @@ Component.prototype._updateComponent = function _updateComponent (prevState, nex
     if (this._unmounted === true) {
         throwError();
     }
-    if ((prevProps !== nextProps || nextProps === index.EMPTY_OBJ) || prevState !== nextState || force) {
+    if (prevProps !== nextProps ||
+        nextProps === index.EMPTY_OBJ ||
+        prevState !== nextState ||
+        force) {
         if (prevProps !== nextProps || nextProps === index.EMPTY_OBJ) {
             if (!isNullOrUndef(this.componentWillReceiveProps) && !fromSetState) {
                 // keep a copy of state before componentWillReceiveProps
@@ -3077,7 +3088,10 @@ Component.prototype._updateComponent = function _updateComponent (prevState, nex
             }
         }
         /* Update if scu is not defined, or it returns truthy value or force */
-        if (force || isNullOrUndef(this.shouldComponentUpdate) || (this.shouldComponentUpdate && this.shouldComponentUpdate(nextProps, nextState, context))) {
+        if (force ||
+            isNullOrUndef(this.shouldComponentUpdate) ||
+            (this.shouldComponentUpdate &&
+                this.shouldComponentUpdate(nextProps, nextState, context))) {
             if (!isNullOrUndef(this.componentWillUpdate)) {
                 this._blockSetState = true;
                 this.componentWillUpdate(nextProps, nextState, context);
@@ -3884,8 +3898,17 @@ var List = function (_Component) {
 
             // If rendering deferred, chunk the nodes client-side
             if (this.props.dom.config.deferredRendering) {
-                // Slice the current nodes by this context's pagination
-                renderNodes = _.slice(this.props.nodes, 0, pagination.limit);
+                // Filter non-hidden/removed nodes and limit by this context's pagination
+                var count = 0;
+                renderNodes = this.props.nodes.filter(function (n) {
+                    var matches = !(n.hidden() || n.removed());
+
+                    if (matches) {
+                        count++;
+                    }
+
+                    return count <= pagination.limit && matches;
+                });
             }
 
             // Render nodes as list items
@@ -4298,7 +4321,7 @@ var InspireDOM = function () {
 
     }, {
         key: 'mouseUpListener',
-        value: function mouseUpListener() {
+        value: function mouseUpListener(event) {
             this.isMouseHeld = false;
 
             if (this.$dragElement) {
@@ -4308,14 +4331,14 @@ var InspireDOM = function () {
                     var targetIsTree = _$1.isFunction(_$1.get(this.$activeDropTarget, 'inspireTree.addNode'));
 
                     // Notify that the node was "dropped out" of this tree
-                    this._tree.emit('node.dropout', this.$dragNode, this.$activeDropTarget, targetIsTree);
+                    this._tree.emit('node.dropout', this.$dragNode, this.$activeDropTarget, targetIsTree, event);
 
                     // If drop target supports the addNode method, invoke it
                     if (targetIsTree) {
                         var newNode = this.$activeDropTarget.inspireTree.addNode(this.$dragNode.copyHierarchy().toObject());
 
                         // Notify that the node was "dropped out"
-                        this.$activeDropTarget.inspireTree.emit('node.dropin', newNode);
+                        this.$activeDropTarget.inspireTree.emit('node.dropin', newNode, event);
                     }
                 }
             }
