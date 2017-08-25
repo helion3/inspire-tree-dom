@@ -6,7 +6,6 @@ import { render } from 'inferno';
 import Inferno from 'inferno';
 import InspireTree from 'inspire-tree';
 import Tree from './dom/tree';
-import './scss/tree.scss';
 
 /**
  * Default InspireTree rendering logic.

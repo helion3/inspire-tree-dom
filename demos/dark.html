@@ -3,13 +3,23 @@
     <head>
         <meta charset="utf-8">
         <title>InspireTree</title>
-        <link rel="stylesheet" href="../build/inspire-tree-light.css" />
+        <link rel="stylesheet" href="../build/inspire-tree-dark.css" />
         <link rel="stylesheet" href="demo.css" />
+        <style>
+            body {
+                background: #222;
+            }
+
+            .inspire-tree {
+                background: #000;
+                border: 1px solid #000;
+
+                color: #fefefe;
+            }
+        </style>
     </head>
     <body>
         <div class="tree"></div>
-        <button class="log-selected">Log Selected</button>
-        <button class="clear-selected">Clear Selected</button>
     </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
     <script src="require.config.js"></script>
@@ -21,22 +31,11 @@
             'inspire-tree-dom'
         ], function($, _, InspireTree, InspireTreeDOM) {
             var tree = new InspireTree({
-                data: $.getJSON('sample-data/full.json'),
-                selection: {
-                    multiple: true
-                }
+                data: $.getJSON('sample-data/full.json')
             });
 
             new InspireTreeDOM(tree, {
                 target: '.tree'
-            });
-
-            $('.log-selected').on('click', function() {
-                console.log(tree.selected());
-            });
-
-            $('.clear-selected').on('click', function() {
-                tree.deselectAll();
             });
         });
     </script>

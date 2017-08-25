@@ -1,0 +1,13 @@
+$tree-row-hover-color: rgba(100, 100, 100, .5);
+$tree-row-selected-color: rgba(74, 110, 116, 0.5);
+$tree-button-background-color: rgb(255, 255, 255);
+
+// Icons
+$icon-selected-folder-color: rgb(102, 160, 169);
+$icon-selected-folder-open-color: rgb(102, 160, 169);
+$icon-selected-file-empty-color: rgb(102, 160, 169);
+$icon-collapse-background-color: rgb(0, 0, 0);
+$icon-expand-background-color: rgb(0, 0, 0);
+
+// scss-lint:disable ImportPath
+@import 'tree';
