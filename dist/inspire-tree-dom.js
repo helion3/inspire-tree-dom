@@ -1,5 +1,5 @@
 /* Inspire Tree DOM
- * @version 2.0.2
+ * @version 3.0.0
  * https://github.com/helion3/inspire-tree-dom
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -17,7 +17,7 @@ function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
 
-var index_1$1 = createCommonjsModule(function (module, exports) {
+var dist = createCommonjsModule(function (module, exports) {
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -703,7 +703,7 @@ function hydrateElement(vNode, dom, lifecycle, context, isSVG) {
     if (!isInvalid(children)) {
         hydrateChildren(children, dom, lifecycle, context, isSVG);
     }
-    else if (dom.firstChild !== null) {
+    else if (dom.firstChild !== null && !isSamePropsInnerHTML(dom, props)) {
         dom.textContent = ""; // dom has content, but VNode has no children remove everything from DOM
     }
     if (props) {
@@ -1391,21 +1391,22 @@ function patchComponent(lastVNode, nextVNode, parentDom, lifecycle, context, isS
                     ? combineFrom(nextState, null)
                     : nextState;
                 var lastProps = instance.props;
+                nextVNode.children = instance;
+                instance._isSVG = isSVG;
+                var lastInput = instance._lastInput;
+                var nextInput = instance._updateComponent(lastState, nextState, lastProps, nextProps, context, false, false);
+                var didUpdate = true;
+                // Update component before getting child context
                 var childContext;
                 if (!isNullOrUndef(instance.getChildContext)) {
                     childContext = instance.getChildContext();
                 }
-                nextVNode.children = instance;
-                instance._isSVG = isSVG;
                 if (isNullOrUndef(childContext)) {
                     childContext = context;
                 }
                 else {
                     childContext = combineFrom(context, childContext);
                 }
-                var lastInput = instance._lastInput;
-                var nextInput = instance._updateComponent(lastState, nextState, lastProps, nextProps, context, false, false);
-                var didUpdate = true;
                 instance._childContext = childContext;
                 if (isInvalid(nextInput)) {
                     nextInput = createVoidVNode();
@@ -1878,7 +1879,7 @@ function patchProp(prop, lastValue, nextValue, dom, isSVG, hasControlledValue) {
             var lastHtml = lastValue && lastValue.__html;
             var nextHtml = nextValue && nextValue.__html;
             if (lastHtml !== nextHtml) {
-                if (!isNullOrUndef(nextHtml)) {
+                if (!isNullOrUndef(nextHtml) && !isSameInnerHTML(dom, nextHtml)) {
                     dom.innerHTML = nextHtml;
                 }
             }
@@ -2341,6 +2342,17 @@ function isKeyed(lastChildren, nextChildren) {
         !isNullOrUndef(lastChildren[0]) &&
         !isNullOrUndef(lastChildren[0].key));
 }
+function isSameInnerHTML(dom, innerHTML) {
+    var tempdom = document.createElement("i");
+    tempdom.innerHTML = innerHTML;
+    return tempdom.innerHTML === dom.innerHTML;
+}
+function isSamePropsInnerHTML(dom, props) {
+    return Boolean(props &&
+        props.dangerouslySetInnerHTML &&
+        props.dangerouslySetInnerHTML.__html &&
+        isSameInnerHTML(dom, props.dangerouslySetInnerHTML.__html));
+}
 
 /**
  * @module Inferno
@@ -2750,7 +2762,7 @@ function linkEvent(data, event) {
  * @module Inferno
  */ /** TypeDoc Comment */
 /* tslint:disable:object-literal-sort-keys */
-var version = "3.7.1";
+var version = "3.8.0";
 // we duplicate it so it plays nicely with different module loading systems
 var index = {
     EMPTY_OBJ: EMPTY_OBJ,
@@ -2788,12 +2800,12 @@ exports.render = render;
 exports.version = version;
 });
 
-var index = createCommonjsModule(function (module) {
-module.exports = index_1$1.default;
+var inferno = createCommonjsModule(function (module) {
+module.exports = dist.default;
 module.exports.default = module.exports;
 });
 
-var index_1 = index.render;
+var inferno_1 = inferno.render;
 
 /**
  * Helper method to create an object for a new node.
@@ -2813,7 +2825,7 @@ function blankNode() {
     };
 }
 
-var index$3 = createCommonjsModule(function (module, exports) {
+var dist$1 = createCommonjsModule(function (module, exports) {
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -2966,14 +2978,14 @@ function applyState(component, force, callback) {
         var nextInput = component._updateComponent(prevState, nextState, props, props, context, force, true);
         var didUpdate = true;
         if (isInvalid(nextInput)) {
-            nextInput = index.createVNode(4096 /* Void */, null);
+            nextInput = inferno.createVNode(4096 /* Void */, null);
         }
         else if (nextInput === NO_OP) {
             nextInput = component._lastInput;
             didUpdate = false;
         }
         else if (isStringOrNumber(nextInput)) {
-            nextInput = index.createVNode(1 /* Text */, null, null, nextInput);
+            nextInput = inferno.createVNode(1 /* Text */, null, null, nextInput);
         }
         else if (isArray(nextInput)) {
             throwError();
@@ -2995,18 +3007,18 @@ function applyState(component, force, callback) {
                 childContext = combineFrom(context, childContext);
             }
             var lifeCycle = component._lifecycle;
-            index.internal_patch(lastInput, nextInput, parentDom, lifeCycle, childContext, component._isSVG, false);
+            inferno.internal_patch(lastInput, nextInput, parentDom, lifeCycle, childContext, component._isSVG, false);
             lifeCycle.trigger();
             if (!isNullOrUndef(component.componentDidUpdate)) {
                 component.componentDidUpdate(props, prevState, context);
             }
-            if (!isNull(index.options.afterUpdate)) {
-                index.options.afterUpdate(vNode);
+            if (!isNull(inferno.options.afterUpdate)) {
+                inferno.options.afterUpdate(vNode);
             }
         }
         var dom = (vNode.dom = nextInput.dom);
-        if (index.options.findDOMNodeEnabled) {
-            index.internal_DOMNodeMap.set(component, nextInput.dom);
+        if (inferno.options.findDOMNodeEnabled) {
+            inferno.internal_DOMNodeMap.set(component, nextInput.dom);
         }
         updateParentComponentVNodes(vNode, dom);
     }
@@ -3018,7 +3030,6 @@ function applyState(component, force, callback) {
         callback.call(component);
     }
 }
-var alreadyWarned = false;
 var Component = function Component(props, context) {
     this.state = null;
     this._blockRender = false;
@@ -3033,9 +3044,9 @@ var Component = function Component(props, context) {
     this._isSVG = false;
     this._updating = true;
     /** @type {object} */
-    this.props = props || index.EMPTY_OBJ;
+    this.props = props || inferno.EMPTY_OBJ;
     /** @type {object} */
-    this.context = context || index.EMPTY_OBJ; // context should not be mutable
+    this.context = context || inferno.EMPTY_OBJ; // context should not be mutable
 };
 Component.prototype.forceUpdate = function forceUpdate (callback) {
     if (this._unmounted || !isBrowser) {
@@ -3054,18 +3065,15 @@ Component.prototype.setState = function setState (newState, callback) {
         throwError();
     }
 };
-Component.prototype.setStateSync = function setStateSync (newState) {
-    this.setState(newState);
-};
 Component.prototype._updateComponent = function _updateComponent (prevState, nextState, prevProps, nextProps, context, force, fromSetState) {
     if (this._unmounted === true) {
         throwError();
     }
     if (prevProps !== nextProps ||
-        nextProps === index.EMPTY_OBJ ||
+        nextProps === inferno.EMPTY_OBJ ||
         prevState !== nextState ||
         force) {
-        if (prevProps !== nextProps || nextProps === index.EMPTY_OBJ) {
+        if (prevProps !== nextProps || nextProps === inferno.EMPTY_OBJ) {
             if (!isNullOrUndef(this.componentWillReceiveProps) && !fromSetState) {
                 // keep a copy of state before componentWillReceiveProps
                 var beforeState = combineFrom(this.state);
@@ -3100,12 +3108,12 @@ Component.prototype._updateComponent = function _updateComponent (prevState, nex
             this.props = nextProps;
             this.state = nextState;
             this.context = context;
-            if (index.options.beforeRender) {
-                index.options.beforeRender(this);
+            if (inferno.options.beforeRender) {
+                inferno.options.beforeRender(this);
             }
             var render = this.render(nextProps, nextState, context);
-            if (index.options.afterRender) {
-                index.options.afterRender(this);
+            if (inferno.options.afterRender) {
+                inferno.options.afterRender(this);
             }
             return render;
         }
@@ -3123,8 +3131,8 @@ Component.prototype.render = function render (nextProps, nextState, nextContext)
 exports['default'] = Component;
 });
 
-var index$2 = createCommonjsModule(function (module) {
-module.exports = index$3.default;
+var infernoComponent = createCommonjsModule(function (module) {
+module.exports = dist$1.default;
 module.exports.default = module.exports;
 });
 
@@ -3208,7 +3216,7 @@ var possibleConstructorReturn = function (self, call) {
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
 
-var createVNode$4 = index.createVNode;
+var createVNode$4 = inferno.createVNode;
 
 var Checkbox = function (_Component) {
     inherits(Checkbox, _Component);
@@ -3252,9 +3260,9 @@ var Checkbox = function (_Component) {
         }
     }]);
     return Checkbox;
-}(index$2);
+}(infernoComponent);
 
-var createVNode$5 = index.createVNode;
+var createVNode$5 = inferno.createVNode;
 
 var EditToolbar = function (_Component) {
     inherits(EditToolbar, _Component);
@@ -3321,9 +3329,9 @@ var EditToolbar = function (_Component) {
         }
     }]);
     return EditToolbar;
-}(index$2);
+}(infernoComponent);
 
-var createVNode$6 = index.createVNode;
+var createVNode$6 = inferno.createVNode;
 
 var EmptyList = function (_Component) {
     inherits(EmptyList, _Component);
@@ -3340,7 +3348,7 @@ var EmptyList = function (_Component) {
         }
     }]);
     return EmptyList;
-}(index$2);
+}(infernoComponent);
 
 /**
  * Compares all keys on the given state. Returns true if any difference exists.
@@ -3367,7 +3375,7 @@ function stateComparator(previousState, currentState) {
     return isDirty;
 }
 
-var createVNode$8 = index.createVNode;
+var createVNode$8 = inferno.createVNode;
 
 var EditForm = function (_Component) {
     inherits(EditForm, _Component);
@@ -3484,9 +3492,9 @@ var EditForm = function (_Component) {
         }
     }]);
     return EditForm;
-}(index$2);
+}(infernoComponent);
 
-var createVNode$7 = index.createVNode;
+var createVNode$7 = inferno.createVNode;
 
 var NodeAnchor = function (_Component) {
     inherits(NodeAnchor, _Component);
@@ -3620,6 +3628,7 @@ var NodeAnchor = function (_Component) {
             }
 
             return createVNode$7(2, 'a', null, content, _extends({
+                'data-uid': node.id,
                 'onBlur': this.blur.bind(this),
                 'onClick': this.click.bind(this),
                 'onContextMenu': this.contextMenu.bind(this),
@@ -3630,9 +3639,9 @@ var NodeAnchor = function (_Component) {
         }
     }]);
     return NodeAnchor;
-}(index$2);
+}(infernoComponent);
 
-var createVNode$9 = index.createVNode;
+var createVNode$9 = inferno.createVNode;
 
 var ToggleAnchor = function (_Component) {
     inherits(ToggleAnchor, _Component);
@@ -3656,9 +3665,9 @@ var ToggleAnchor = function (_Component) {
         }
     }]);
     return ToggleAnchor;
-}(index$2);
+}(infernoComponent);
 
-var createVNode$3 = index.createVNode;
+var createVNode$3 = inferno.createVNode;
 
 var ListItem = function (_Component) {
     inherits(ListItem, _Component);
@@ -3748,6 +3757,159 @@ var ListItem = function (_Component) {
             return attributes;
         }
     }, {
+        key: 'getTargetDirection',
+        value: function getTargetDirection(event) {
+            var clientY = event.clientY;
+            var targetRect = event.target.getBoundingClientRect();
+
+            var yThresholdForAbove = targetRect.top + targetRect.height / 3;
+            var yThresholdForBelow = targetRect.bottom - targetRect.height / 3;
+
+            var dir = 0;
+
+            if (clientY <= yThresholdForAbove) {
+                dir = -1;
+            } else if (clientY >= yThresholdForBelow) {
+                dir = 1;
+            }
+
+            return dir;
+        }
+    }, {
+        key: 'onDragStart',
+        value: function onDragStart(event) {
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.dropEffect = 'move';
+
+            var nodeId = event.target.dataset.uid;
+            var node = this.props.dom._tree.node(nodeId);
+
+            event.dataTransfer.setData('treeId', node.tree().id);
+            event.dataTransfer.setData('nodeId', nodeId);
+
+            this.props.dom._tree.emit('node.dragstart', event);
+        }
+    }, {
+        key: 'onDragEnd',
+        value: function onDragEnd(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            this.unhighlightTarget(event.target);
+
+            this.props.dom._tree.emit('node.dragend', event);
+        }
+    }, {
+        key: 'onDragEnter',
+        value: function onDragEnter(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Highlight a new target
+            event.target.classList.add('itree-droppable-active');
+
+            this.props.dom._tree.emit('node.dragenter', event);
+        }
+    }, {
+        key: 'onDragLeave',
+        value: function onDragLeave(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            this.unhighlightTarget(event.target);
+
+            this.props.dom._tree.emit('node.dragleave', event);
+        }
+    }, {
+        key: 'onDragOver',
+        value: function onDragOver(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Remove old classes
+            this.unhighlightTarget(event.target);
+
+            // Indicate active target
+            event.target.classList.add('itree-droppable-active');
+
+            var dir = this.getTargetDirection(event);
+
+            if (dir === -1) {
+                event.target.classList.add('itree-droppable-target-above');
+            } else if (dir === 1) {
+                event.target.classList.add('itree-droppable-target-below');
+            } else {
+                event.target.classList.add('itree-droppable-target');
+            }
+
+            this.props.dom._tree.emit('node.dragover', event, dir);
+        }
+    }, {
+        key: 'onDrop',
+        value: function onDrop(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            this.unhighlightTarget(event.target);
+
+            // Get the data from our transfer
+            var treeId = event.dataTransfer.getData('treeId');
+            var nodeId = event.dataTransfer.getData('nodeId');
+
+            // Find the drop target
+            var targetId = event.target.dataset.uid;
+            var targetNode = this.props.dom._tree.node(targetId);
+
+            // Skip if the node is the target
+            if (nodeId === targetId) {
+                return;
+            }
+
+            // Get the source tree, it may be another instance
+            var sourceTree;
+            if (treeId === this.props.dom._tree.id) {
+                sourceTree = this.props.dom._tree;
+            } else {
+                sourceTree = document.querySelector('[data-uid="' + treeId + '"]').inspireTree;
+            }
+
+            var node = sourceTree.node(nodeId).remove();
+
+            // Determine the insert direction
+            var dir = this.getTargetDirection(event);
+
+            // Get the index of the target node
+            var targetIndex = targetNode.context().indexOf(targetNode);
+
+            var newNode;
+            var newIndex;
+            if (dir === 0) {
+                // Add as a child
+                newNode = targetNode.addChild(node);
+
+                // Cache the new index
+                newIndex = targetNode.children.indexOf(newNode);
+
+                // Auto-expand
+                targetNode.expand();
+            } else {
+                // Determine the new index
+                newIndex = dir === 1 ? ++targetIndex : targetIndex;
+
+                // Insert and cache the node
+                newNode = targetNode.context().insertAt(newIndex, node);
+            }
+
+            this.props.dom._tree.emit('node.drop', event, newNode, targetNode, newIndex);
+        }
+    }, {
+        key: 'unhighlightTarget',
+        value: function unhighlightTarget(node) {
+            if (node) {
+                node.classList.remove('itree-droppable-target-above', 'itree-droppable-target-below', 'itree-droppable-target', 'itree-droppable-active');
+            }
+        }
+    }, {
         key: 'renderCheckbox',
         value: function renderCheckbox() {
             var node = this.props.node;
@@ -3832,8 +3994,16 @@ var ListItem = function (_Component) {
                 'hasOrWillHaveChildren': Boolean(node.children),
                 'node': node,
                 'text': node.text
-            })]), createVNode$3(2, 'div', 'wholerow'), this.renderChildren()], _extends({}, this.getAttributes()), null, function (domNode) {
-                return _this2.props.node.itree.ref = domNode;
+            })]), createVNode$3(2, 'div', 'wholerow'), this.renderChildren()], _extends({
+                'draggable': this.props.dom.config.dragAndDrop,
+                'onDragEnd': this.onDragEnd.bind(this),
+                'onDragEnter': this.onDragEnter.bind(this),
+                'onDragLeave': this.onDragLeave.bind(this),
+                'onDragOver': this.onDragOver.bind(this),
+                'onDragStart': this.onDragStart.bind(this),
+                'onDrop': this.onDrop.bind(this)
+            }, this.getAttributes()), null, function (domNode) {
+                return _this2.node = _this2.props.node.itree.ref = domNode;
             });
 
             // Clear dirty bool only after everything has been generated (and states set)
@@ -3844,9 +4014,9 @@ var ListItem = function (_Component) {
         }
     }]);
     return ListItem;
-}(index$2);
+}(infernoComponent);
 
-var createVNode$2 = index.createVNode;
+var createVNode$2 = inferno.createVNode;
 
 var List = function (_Component) {
     inherits(List, _Component);
@@ -3931,9 +4101,9 @@ var List = function (_Component) {
         }
     }]);
     return List;
-}(index$2);
+}(infernoComponent);
 
-var createVNode$1 = index.createVNode;
+var createVNode$1 = inferno.createVNode;
 
 var Tree = function (_Component) {
     inherits(Tree, _Component);
@@ -3981,7 +4151,7 @@ var Tree = function (_Component) {
         }
     }]);
     return Tree;
-}(index$2);
+}(infernoComponent);
 
 // Libs
 
@@ -3991,7 +4161,7 @@ var Tree = function (_Component) {
  * @category DOM
  * @return {InspireDOM} Default renderer.
  */
-var createVNode = index.createVNode;
+var createVNode = inferno.createVNode;
 
 var InspireDOM = function () {
     function InspireDOM(tree, opts) {
@@ -4020,7 +4190,7 @@ var InspireDOM = function () {
         this.config = _$1.defaults({}, opts, {
             autoLoadMore: true,
             deferredRendering: false,
-            dragTargets: false,
+            dragAndDrop: false,
             nodeHeight: 25,
             showCheckboxes: false,
             tabindex: -1,
@@ -4070,14 +4240,14 @@ var InspireDOM = function () {
     createClass(InspireDOM, [{
         key: 'attach',
         value: function attach(target) {
-            var _this2 = this;
-
             this.$target = this.getElement(target);
             this.$scrollLayer = this.getScrollableAncestor(this.$target);
 
             if (!this.$target) {
                 throw new Error('No valid element to attach to.');
             }
+
+            this.$target.setAttribute('data-uid', this._tree.id);
 
             // Set classnames
             var classNames = this.$target.className.split(' ');
@@ -4097,24 +4267,12 @@ var InspireDOM = function () {
             // Handle keyboard interaction
             this.$target.addEventListener('keyup', this.keyboardListener.bind(this));
 
-            var dragTargetSelectors = this.config.dragTargets;
-            if (!_$1.isEmpty(dragTargetSelectors)) {
-                _$1.each(dragTargetSelectors, function (selector) {
-                    var dropTarget = _this2.getElement(selector);
-
-                    if (dropTarget) {
-                        _this2.dropTargets.push(dropTarget);
-                    } else {
-                        throw new Error('No valid element found for drop target ' + selector);
-                    }
-                });
-            }
-
-            this.isDragDropEnabled = this.dropTargets.length > 0;
-
-            if (this.isDragDropEnabled) {
-                document.addEventListener('mouseup', this.mouseUpListener.bind(this));
-                document.addEventListener('mousemove', this.mouseMoveListener.bind(this));
+            // Drag and drop listeners
+            if (this.config.dragAndDrop) {
+                this.$target.addEventListener('dragenter', this.onDragEnter.bind(this), false);
+                this.$target.addEventListener('dragleave', this.onDragLeave.bind(this), false);
+                this.$target.addEventListener('dragover', this.onDragOver.bind(this), false);
+                this.$target.addEventListener('drop', this.onDrop.bind(this), false);
             }
 
             // Sync browser focus to focus state
@@ -4159,37 +4317,10 @@ var InspireDOM = function () {
         }
 
         /**
-         * Creates a draggable element by cloning a target,
-         * registers a listener for mousemove.
-         *
-         * @private
-         * @param {HTMLElement} element DOM Element.
-         * @param {Event} event Click event to use.
-         * @return {void}
-         */
-
-    }, {
-        key: 'createDraggableElement',
-        value: function createDraggableElement(element, event) {
-            this.$dragNode = this.nodeFromTitleDOMElement(element);
-
-            var rect = element.getBoundingClientRect();
-            var diffX = event.clientX - rect.left;
-            var diffY = event.clientY - rect.top;
-
-            this.dragHandleOffset = { left: diffX, top: diffY };
-
-            this.$dragElement = element.cloneNode(true);
-            this.$dragElement.className += ' dragging';
-            this.$dragElement.style.top = rect.top + 'px';
-            this.$dragElement.style.left = rect.left + 'px';
-            this.$target.appendChild(this.$dragElement);
-        }
-
-        /**
          * Get an HTMLElement through various means:
          * An element, jquery object, or a selector.
          *
+         * @category DOM
          * @private
          * @param {mixed} target Element, jQuery selector, selector.
          * @return {HTMLElement} Matching element.
@@ -4217,7 +4348,9 @@ var InspireDOM = function () {
         /**
          * Helper method to find a scrollable ancestor element.
          *
-         * @param  {HTMLElement} $element Starting element.
+         * @category DOM
+         * @private
+         * @param {HTMLElement} $element Starting element.
          * @return {HTMLElement} Scrollable element.
          */
 
@@ -4235,15 +4368,25 @@ var InspireDOM = function () {
         }
 
         /**
-         * Listen to keyboard event for navigation.
+         * Get a tree instance based on an ID.
          *
-         * @private
-         * @param {Event} event Keyboard event.
-         * @return {void}
+         * @category DOM
+         * @param {string} id Tree ID.
+         * @return {InspireTree} Tree instance.
          */
 
     }, {
         key: 'keyboardListener',
+
+
+        /**
+         * Listen to keyboard event for navigation.
+         *
+         * @category DOM
+         * @private
+         * @param {Event} event Keyboard event.
+         * @return {void}
+         */
         value: function keyboardListener(event) {
             // Navigation
             var focusedNode = this._tree.focused();
@@ -4271,90 +4414,9 @@ var InspireDOM = function () {
         }
 
         /**
-         * Listener for mouse move events for drag and drop.
-         * Is removed automatically on mouse up.
-         *
-         * @private
-         * @param {Event} event Mouse move event.
-         * @return {void}
-         */
-
-    }, {
-        key: 'mouseMoveListener',
-        value: function mouseMoveListener(event) {
-            if (this.isMouseHeld && !this.$dragElement) {
-                this.createDraggableElement(event.target, event);
-            } else if (this.$dragElement) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                var x = event.clientX - this.dragHandleOffset.left;
-                var y = event.clientY - this.dragHandleOffset.top;
-
-                this.$dragElement.style.left = x + 'px';
-                this.$dragElement.style.top = y + 'px';
-
-                var validTarget = void 0;
-                _$1.each(this.dropTargets, function (target) {
-                    var rect = target.getBoundingClientRect();
-
-                    if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
-                        validTarget = target;
-                        return false;
-                    }
-                });
-
-                // If new target found for the first time
-                if (!this.$activeDropTarget && validTarget && validTarget.className.indexOf('itree-active-drop-target') === -1) {
-                    validTarget.className += ' itree-active-drop-target';
-                }
-
-                this.$activeDropTarget = validTarget;
-            }
-        }
-
-        /**
-         * Handle mouse up events for dragged elements.
-         *
-         * @return {void}
-         */
-
-    }, {
-        key: 'mouseUpListener',
-        value: function mouseUpListener(event) {
-            this.isMouseHeld = false;
-
-            if (this.$dragElement) {
-                this.$dragElement.parentNode.removeChild(this.$dragElement);
-
-                if (this.$activeDropTarget) {
-                    var targetIsTree = _$1.isFunction(_$1.get(this.$activeDropTarget, 'inspireTree.addNode'));
-
-                    // Notify that the node was "dropped out" of this tree
-                    this._tree.emit('node.dropout', this.$dragNode, this.$activeDropTarget, targetIsTree, event);
-
-                    // If drop target supports the addNode method, invoke it
-                    if (targetIsTree) {
-                        var newNode = this.$activeDropTarget.inspireTree.addNode(this.$dragNode.copyHierarchy().toObject());
-
-                        // Notify that the node was "dropped out"
-                        this.$activeDropTarget.inspireTree.emit('node.dropin', newNode, event);
-                    }
-                }
-            }
-
-            if (this.$activeDropTarget) {
-                this.$activeDropTarget.className = this.$activeDropTarget.className.replace('itree-active-drop-target', '');
-            }
-
-            this.$dragNode = null;
-            this.$dragElement = null;
-            this.$activeDropTarget = null;
-        }
-
-        /**
          * Move select down the visible tree from a starting node.
          *
+         * @category DOM
          * @private
          * @param {object} startingNode Node object.
          * @return {void}
@@ -4372,6 +4434,7 @@ var InspireDOM = function () {
         /**
          * Move select up the visible tree from a starting node.
          *
+         * @category DOM
          * @private
          * @param {object} startingNode Node object.
          * @return {void}
@@ -4389,6 +4452,7 @@ var InspireDOM = function () {
         /**
          * Helper method for obtaining the data-uid from a DOM element.
          *
+         * @category DOM
          * @private
          * @param {HTMLElement} element HTML Element.
          * @return {object} Node object
@@ -4399,6 +4463,85 @@ var InspireDOM = function () {
         value: function nodeFromTitleDOMElement(element) {
             var uid = element.parentNode.parentNode.getAttribute('data-uid');
             return this._tree.node(uid);
+        }
+
+        /**
+         * Drag enter listener.
+         *
+         * @category DOM
+         * @private
+         * @param {DragEvent} event Drag enter.
+         * @return {void}
+         */
+
+    }, {
+        key: 'onDragEnter',
+        value: function onDragEnter(event) {
+            event.preventDefault();
+
+            event.target.classList.add('itree-droppable-active');
+        }
+
+        /**
+         * Drag leave listener.
+         *
+         * @category DOM
+         * @private
+         * @param {DragEvent} event Drag leave.
+         * @return {void}
+         */
+
+    }, {
+        key: 'onDragLeave',
+        value: function onDragLeave(event) {
+            event.preventDefault();
+
+            this.unhighlightTarget(event.target);
+        }
+
+        /**
+         * Drag over listener.
+         *
+         * @category DOM
+         * @private
+         * @param {DragEvent} event Drag over.
+         * @return {void}
+         */
+
+    }, {
+        key: 'onDragOver',
+        value: function onDragOver(event) {
+            event.preventDefault();
+        }
+
+        /**
+         * Drop listener.
+         *
+         * @category DOM
+         * @private
+         * @param {DragEvent} event Dropped.
+         * @return {void}
+         */
+
+    }, {
+        key: 'onDrop',
+        value: function onDrop(event) {
+            event.preventDefault();
+
+            var treeId = event.dataTransfer.getData('treeId');
+            var nodeId = event.dataTransfer.getData('nodeId');
+
+            // Find the tree
+            var tree = InspireDOM.getTreeById(treeId);
+
+            // Remove the node from its previous context
+            var exported = tree.node(nodeId).remove();
+
+            // Add the node to this tree/level
+            var newNode = this._tree.addNode(exported);
+            var newIndex = this._tree.indexOf(newNode);
+
+            this._tree.emit('node.drop', event, newNode, null, newIndex);
         }
 
         /**
@@ -4413,7 +4556,7 @@ var InspireDOM = function () {
     }, {
         key: 'renderNodes',
         value: function renderNodes(nodes) {
-            index_1(createVNode(16, Tree, null, null, {
+            inferno_1(createVNode(16, Tree, null, null, {
                 'dom': this,
                 'nodes': nodes || this._tree.nodes()
             }), this.$target);
@@ -4432,7 +4575,7 @@ var InspireDOM = function () {
          * @return {void}
          */
         value: function scrollListener(event) {
-            var _this3 = this;
+            var _this2 = this;
 
             if (!this.rendering && !this.loading) {
                 // Get the bounding rect of the scroll layer
@@ -4451,10 +4594,10 @@ var InspireDOM = function () {
 
                         var $parent = link.parentNode.parentNode.parentNode;
                         if ($parent.tagName === 'LI') {
-                            context = _this3._tree.node($parent.getAttribute('data-uid'));
+                            context = _this2._tree.node($parent.getAttribute('data-uid'));
                         }
 
-                        _this3._tree.loadMore(context, event);
+                        _this2._tree.loadMore(context, event);
                     }
                 });
             }
@@ -4475,6 +4618,31 @@ var InspireDOM = function () {
 
             if ($selected && this.$scrollLayer) {
                 this.$scrollLayer.scrollTop = $selected.offsetTop;
+            }
+        }
+
+        /**
+         * Remove highlight class.
+         *
+         * @category DOM
+         * @private
+         * @param {HTMLElement} node Target element.
+         * @return {void}
+         */
+
+    }, {
+        key: 'unhighlightTarget',
+        value: function unhighlightTarget(node) {
+            if (node) {
+                node.classList.remove('itree-droppable-active');
+            }
+        }
+    }], [{
+        key: 'getTreeById',
+        value: function getTreeById(id) {
+            var element = document.querySelector('[data-uid="' + id + '"]');
+            if (element) {
+                return element.inspireTree;
             }
         }
     }]);

@@ -9,7 +9,7 @@ Inspire Tree DOM is the DOM rendering engine for [Inspire Tree](https://github.c
 InspireTree is required.
 
 - [Website & Demos](http://www.inspire-tree.com/)
-- [Changelog](https://github.com/helion3/inspire-tree-dom/blob/master/CHANGELOG)
+- [Changelog](https://github.com/helion3/inspire-tree-dom/blob/master/CHANGELOG.md)
 
 ### Features:
 
@@ -18,7 +18,7 @@ InspireTree is required.
 - Clean and easy-to-override CSS.
 - Modular SCSS for custom compilation.
 - Keyboard navigation.
-- Drag and Drop between tree instances (optional).
+- Drag and Drop.
 
 ### Installation
 
