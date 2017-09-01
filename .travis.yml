@@ -17,6 +17,7 @@ before_install:
   - sudo dpkg -i google-chrome*.deb
 install:
   - yarn install
+  - yarn add inspire-tree
 before_script:
   - rollup -c
 script:
