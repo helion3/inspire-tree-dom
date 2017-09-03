@@ -52,7 +52,7 @@ export default class ListItem extends Component {
             classNames.push('expanded');
         }
 
-        classNames.push(node.children ? 'folder' : 'leaf');
+        classNames.push(node.hasOrWillHaveChildren() ? 'folder' : 'leaf');
 
         // Append any custom class names
         let customClasses = attributes.class || attributes.className;
@@ -315,7 +315,7 @@ export default class ListItem extends Component {
                     dom={this.props.dom}
                     editing={node.editing()}
                     expanded={node.expanded()}
-                    hasOrWillHaveChildren={Boolean(node.children)}
+                    hasOrWillHaveChildren={node.hasOrWillHaveChildren()}
                     node={node}
                     text={node.text} />
             </div>
