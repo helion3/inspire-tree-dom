@@ -1,11 +1,11 @@
 {
   "name": "inspire-tree-dom",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "DOM rendering engine for Inspire Tree",
   "repository": "https://github.com/helion3/inspire-tree-dom",
   "license": "MIT",
   "peerDependencies": {
-    "inspire-tree": "^3.0.0"
+    "inspire-tree": "^3.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.3",

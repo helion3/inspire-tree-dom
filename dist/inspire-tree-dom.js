@@ -1,5 +1,5 @@
 /* Inspire Tree DOM
- * @version 3.0.0
+ * @version 3.0.1
  * https://github.com/helion3/inspire-tree-dom
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -2762,7 +2762,7 @@ function linkEvent(data, event) {
  * @module Inferno
  */ /** TypeDoc Comment */
 /* tslint:disable:object-literal-sort-keys */
-var version = "3.8.0";
+var version = "3.8.2";
 // we duplicate it so it plays nicely with different module loading systems
 var index = {
     EMPTY_OBJ: EMPTY_OBJ,
@@ -2889,7 +2889,6 @@ function combineFrom(first, second) {
  * @module Inferno-Component
  */ /** TypeDoc Comment */
 // Make sure u use EMPTY_OBJ from 'inferno', otherwise it'll be a different reference
-var noOp = ERROR_MSG;
 var componentCallbackQueue = new Map();
 // when a components root VNode is also a component, we can run into issues
 // this will recursively look for vNode.parentNode if the VNode is a component
@@ -3136,6 +3135,128 @@ module.exports = dist$1.default;
 module.exports.default = module.exports;
 });
 
+var babelHelpers = {};
+
+
+
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+
+
+
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -3215,6 +3336,28 @@ var possibleConstructorReturn = function (self, call) {
 
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+babelHelpers;
 
 var createVNode$4 = inferno.createVNode;
 
@@ -3349,6 +3492,8 @@ var EmptyList = function (_Component) {
     }]);
     return EmptyList;
 }(infernoComponent);
+
+'use strict';
 
 /**
  * Compares all keys on the given state. Returns true if any difference exists.
@@ -3724,7 +3869,7 @@ var ListItem = function (_Component) {
                 classNames.push('expanded');
             }
 
-            classNames.push(node.children ? 'folder' : 'leaf');
+            classNames.push(node.hasOrWillHaveChildren() ? 'folder' : 'leaf');
 
             // Append any custom class names
             var customClasses = attributes.class || attributes.className;
@@ -3991,7 +4136,7 @@ var ListItem = function (_Component) {
                 'dom': this.props.dom,
                 'editing': node.editing(),
                 'expanded': node.expanded(),
-                'hasOrWillHaveChildren': Boolean(node.children),
+                'hasOrWillHaveChildren': node.hasOrWillHaveChildren(),
                 'node': node,
                 'text': node.text
             })]), createVNode$3(2, 'div', 'wholerow'), this.renderChildren()], _extends({
@@ -4152,6 +4297,8 @@ var Tree = function (_Component) {
     }]);
     return Tree;
 }(infernoComponent);
+
+'use strict';
 
 // Libs
 

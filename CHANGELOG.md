@@ -1,5 +1,10 @@
 # Changes to Inspire Tree DOM
 
+# 3.0.1
+
+- Fixed nodes with empty children arrays showing as folders.
+- Removed `inspire-tree` mistakenly listed under package.json dependencies.
+
 # 3.0.0
 
 - Overhauled drag and drop.
