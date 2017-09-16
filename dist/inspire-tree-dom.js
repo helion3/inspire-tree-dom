@@ -1,5 +1,5 @@
 /* Inspire Tree DOM
- * @version 3.0.1
+ * @version 3.0.2
  * https://github.com/helion3/inspire-tree-dom
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -943,115 +943,82 @@ function poolComponent(vNode) {
  */ /** TypeDoc Comment */
 function unmount(vNode, parentDom, lifecycle, canRecycle, isRecycling) {
     var flags = vNode.flags;
+    var dom = vNode.dom;
     if (flags & 28 /* Component */) {
-        unmountComponent(vNode, parentDom, lifecycle, canRecycle, isRecycling);
+        var instance = vNode.children;
+        var isStatefulComponent$$1 = (flags & 4 /* ComponentClass */) > 0;
+        var props = vNode.props || EMPTY_OBJ;
+        var ref = vNode.ref;
+        if (!isRecycling) {
+            if (isStatefulComponent$$1) {
+                if (!instance._unmounted) {
+                    if (!isNull(options.beforeUnmount)) {
+                        options.beforeUnmount(vNode);
+                    }
+                    if (!isUndefined(instance.componentWillUnmount)) {
+                        instance.componentWillUnmount();
+                    }
+                    if (ref && !isRecycling) {
+                        ref(null);
+                    }
+                    instance._unmounted = true;
+                    if (options.findDOMNodeEnabled) {
+                        componentToDOMNodeMap.delete(instance);
+                    }
+                    unmount(instance._lastInput, null, instance._lifecycle, false, isRecycling);
+                }
+            }
+            else {
+                if (!isNullOrUndef(ref)) {
+                    if (!isNullOrUndef(ref.onComponentWillUnmount)) {
+                        ref.onComponentWillUnmount(dom, props);
+                    }
+                }
+                unmount(instance, null, lifecycle, false, isRecycling);
+            }
+        }
+        if (options.recyclingEnabled &&
+            !isStatefulComponent$$1 &&
+            (parentDom || canRecycle)) {
+            poolComponent(vNode);
+        }
     }
     else if (flags & 3970 /* Element */) {
-        unmountElement(vNode, parentDom, lifecycle, canRecycle, isRecycling);
-    }
-    else if (flags & (1 /* Text */ | 4096 /* Void */)) {
-        unmountVoidOrText(vNode, parentDom);
-    }
-}
-function unmountVoidOrText(vNode, parentDom) {
-    if (!isNull(parentDom)) {
-        removeChild(parentDom, vNode.dom);
-    }
-}
-function unmountComponent(vNode, parentDom, lifecycle, canRecycle, isRecycling) {
-    var instance = vNode.children;
-    var flags = vNode.flags;
-    var isStatefulComponent$$1 = flags & 4;
-    var props = vNode.props || EMPTY_OBJ;
-    var ref = vNode.ref;
-    var dom = vNode.dom;
-    if (!isRecycling) {
-        if (isStatefulComponent$$1) {
-            if (!instance._unmounted) {
-                if (!isNull(options.beforeUnmount)) {
-                    options.beforeUnmount(vNode);
+        var ref$1 = vNode.ref;
+        var props$1 = vNode.props;
+        if (!isRecycling && isFunction$$1(ref$1)) {
+            ref$1(null);
+        }
+        var children = vNode.children;
+        if (!isNullOrUndef(children)) {
+            if (isArray(children)) {
+                for (var i = 0, len = children.length; i < len; i++) {
+                    var child = children[i];
+                    if (!isInvalid(child) && isObject$$1(child)) {
+                        unmount(child, null, lifecycle, false, isRecycling);
+                    }
                 }
-                if (!isUndefined(instance.componentWillUnmount)) {
-                    instance.componentWillUnmount();
-                }
-                if (ref && !isRecycling) {
-                    ref(null);
-                }
-                instance._unmounted = true;
-                if (options.findDOMNodeEnabled) {
-                    componentToDOMNodeMap.delete(instance);
-                }
-                unmount(instance._lastInput, null, instance._lifecycle, false, isRecycling);
+            }
+            else if (isObject$$1(children)) {
+                unmount(children, null, lifecycle, false, isRecycling);
             }
         }
-        else {
-            if (!isNullOrUndef(ref)) {
-                if (!isNullOrUndef(ref.onComponentWillUnmount)) {
-                    ref.onComponentWillUnmount(dom, props);
+        if (!isNull(props$1)) {
+            for (var name in props$1) {
+                // do not add a hasOwnProperty check here, it affects performance
+                if (props$1[name] !== null && isAttrAnEvent(name)) {
+                    patchEvent(name, props$1[name], null, dom);
+                    // We need to set this null, because same props otherwise come back if SCU returns false and we are recyling
+                    props$1[name] = null;
                 }
             }
-            unmount(instance, null, lifecycle, false, isRecycling);
         }
-    }
-    if (parentDom) {
-        removeChild(parentDom, dom);
-    }
-    if (options.recyclingEnabled &&
-        !isStatefulComponent$$1 &&
-        (parentDom || canRecycle)) {
-        poolComponent(vNode);
-    }
-}
-function unmountElement(vNode, parentDom, lifecycle, canRecycle, isRecycling) {
-    var dom = vNode.dom;
-    var ref = vNode.ref;
-    var props = vNode.props;
-    if (ref && !isRecycling) {
-        unmountRef(ref);
-    }
-    var children = vNode.children;
-    if (!isNullOrUndef(children)) {
-        unmountChildren$1(children, lifecycle, isRecycling);
-    }
-    if (!isNull(props)) {
-        for (var name in props) {
-            // do not add a hasOwnProperty check here, it affects performance
-            if (props[name] !== null && isAttrAnEvent(name)) {
-                patchEvent(name, props[name], null, dom);
-                // We need to set this null, because same props otherwise come back if SCU returns false and we are recyling
-                props[name] = null;
-            }
+        if (options.recyclingEnabled && (parentDom || canRecycle)) {
+            poolElement(vNode);
         }
     }
     if (!isNull(parentDom)) {
         removeChild(parentDom, dom);
-    }
-    if (options.recyclingEnabled && (parentDom || canRecycle)) {
-        poolElement(vNode);
-    }
-}
-function unmountChildren$1(children, lifecycle, isRecycling) {
-    if (isArray(children)) {
-        for (var i = 0, len = children.length; i < len; i++) {
-            var child = children[i];
-            if (!isInvalid(child) && isObject$$1(child)) {
-                unmount(child, null, lifecycle, false, isRecycling);
-            }
-        }
-    }
-    else if (isObject$$1(children)) {
-        unmount(children, null, lifecycle, false, isRecycling);
-    }
-}
-function unmountRef(ref) {
-    if (isFunction$$1(ref)) {
-        ref(null);
-    }
-    else {
-        if (isInvalid(ref)) {
-            return;
-        }
-        throwError();
     }
 }
 
@@ -1355,11 +1322,22 @@ function patchChildren(lastFlags, nextFlags, lastChildren, nextChildren, dom, li
         }
     }
     if (patchArray) {
-        if (patchKeyed) {
-            patchKeyedChildren(lastChildren, nextChildren, dom, lifecycle, context, isSVG, isRecycling);
+        var lastLength = lastChildren.length;
+        var nextLength = nextChildren.length;
+        // Fast path's for both algorithms
+        if (lastLength === 0) {
+            if (nextLength > 0) {
+                mountArrayChildren(nextChildren, dom, lifecycle, context, isSVG);
+            }
+        }
+        else if (nextLength === 0) {
+            removeAllChildren(dom, lastChildren, lifecycle, isRecycling);
+        }
+        else if (patchKeyed) {
+            patchKeyedChildren(lastChildren, nextChildren, dom, lifecycle, context, isSVG, isRecycling, lastLength, nextLength);
         }
         else {
-            patchNonKeyedChildren(lastChildren, nextChildren, dom, lifecycle, context, isSVG, isRecycling);
+            patchNonKeyedChildren(lastChildren, nextChildren, dom, lifecycle, context, isSVG, isRecycling, lastLength, nextLength);
         }
     }
 }
@@ -1395,6 +1373,11 @@ function patchComponent(lastVNode, nextVNode, parentDom, lifecycle, context, isS
                 instance._isSVG = isSVG;
                 var lastInput = instance._lastInput;
                 var nextInput = instance._updateComponent(lastState, nextState, lastProps, nextProps, context, false, false);
+                // If this component was destroyed by its parent do nothing, this is no-op
+                // It can happen by using external callback etc during render / update
+                if (instance._unmounted) {
+                    return false;
+                }
                 var didUpdate = true;
                 // Update component before getting child context
                 var childContext;
@@ -1519,9 +1502,7 @@ function patchText(lastVNode, nextVNode) {
 function patchVoid(lastVNode, nextVNode) {
     nextVNode.dom = lastVNode.dom;
 }
-function patchNonKeyedChildren(lastChildren, nextChildren, dom, lifecycle, context, isSVG, isRecycling) {
-    var lastChildrenLength = lastChildren.length;
-    var nextChildrenLength = nextChildren.length;
+function patchNonKeyedChildren(lastChildren, nextChildren, dom, lifecycle, context, isSVG, isRecycling, lastChildrenLength, nextChildrenLength) {
     var commonLength = lastChildrenLength > nextChildrenLength
         ? nextChildrenLength
         : lastChildrenLength;
@@ -1542,18 +1523,13 @@ function patchNonKeyedChildren(lastChildren, nextChildren, dom, lifecycle, conte
             appendChild(dom, mount(nextChild$1, null, lifecycle, context, isSVG));
         }
     }
-    else if (nextChildrenLength === 0) {
-        removeAllChildren(dom, lastChildren, lifecycle, isRecycling);
-    }
     else if (lastChildrenLength > nextChildrenLength) {
         for (i = commonLength; i < lastChildrenLength; i++) {
             unmount(lastChildren[i], dom, lifecycle, false, isRecycling);
         }
     }
 }
-function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
-    var aLength = a.length;
-    var bLength = b.length;
+function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling, aLength, bLength) {
     var aEnd = aLength - 1;
     var bEnd = bLength - 1;
     var aStart = 0;
@@ -1565,16 +1541,6 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
     var nextNode;
     var nextPos;
     var node;
-    if (aLength === 0) {
-        if (bLength > 0) {
-            mountArrayChildren(b, dom, lifecycle, context, isSVG);
-        }
-        return;
-    }
-    else if (bLength === 0) {
-        removeAllChildren(dom, a, lifecycle, isRecycling);
-        return;
-    }
     var aStartNode = a[aStart];
     var bStartNode = b[bStart];
     var aEndNode = a[aEnd];
@@ -1586,8 +1552,8 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
         b[bEnd] = bEndNode = directClone(bEndNode);
     }
     // Step 1
-    /* eslint no-constant-condition: 0 */
-    outer: while (true) {
+    // tslint:disable-next-line
+    outer: {
         // Sync nodes with the same key at the beginning.
         while (aStartNode.key === bStartNode.key) {
             patch(aStartNode, bStartNode, dom, lifecycle, context, isSVG, isRecycling);
@@ -1616,40 +1582,11 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
                 b[bEnd] = bEndNode = directClone(bEndNode);
             }
         }
-        // Move and sync nodes from right to left.
-        if (aEndNode.key === bStartNode.key) {
-            patch(aEndNode, bStartNode, dom, lifecycle, context, isSVG, isRecycling);
-            insertOrAppend(dom, bStartNode.dom, aStartNode.dom);
-            aEnd--;
-            bStart++;
-            aEndNode = a[aEnd];
-            bStartNode = b[bStart];
-            if (bStartNode.dom) {
-                b[bStart] = bStartNode = directClone(bStartNode);
-            }
-            continue;
-        }
-        // Move and sync nodes from left to right.
-        if (aStartNode.key === bEndNode.key) {
-            patch(aStartNode, bEndNode, dom, lifecycle, context, isSVG, isRecycling);
-            nextPos = bEnd + 1;
-            nextNode = nextPos < b.length ? b[nextPos].dom : null;
-            insertOrAppend(dom, bEndNode.dom, nextNode);
-            aStart++;
-            bEnd--;
-            aStartNode = a[aStart];
-            bEndNode = b[bEnd];
-            if (bEndNode.dom) {
-                b[bEnd] = bEndNode = directClone(bEndNode);
-            }
-            continue;
-        }
-        break;
     }
     if (aStart > aEnd) {
         if (bStart <= bEnd) {
             nextPos = bEnd + 1;
-            nextNode = nextPos < b.length ? b[nextPos].dom : null;
+            nextNode = nextPos < bLength ? b[nextPos].dom : null;
             while (bStart <= bEnd) {
                 node = b[bStart];
                 if (node.dom) {
@@ -1666,21 +1603,21 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
         }
     }
     else {
-        aLength = aEnd - aStart + 1;
-        bLength = bEnd - bStart + 1;
-        var sources = new Array(bLength);
+        var aLeft = aEnd - aStart + 1;
+        var bLeft = bEnd - bStart + 1;
+        var sources = new Array(bLeft);
         // Mark all nodes as inserted.
-        for (i = 0; i < bLength; i++) {
+        for (i = 0; i < bLeft; i++) {
             sources[i] = -1;
         }
         var moved = false;
         var pos = 0;
         var patched = 0;
         // When sizes are small, just loop them through
-        if (bLength <= 4 || aLength * bLength <= 16) {
+        if (bLeft <= 4 || aLeft * bLeft <= 16) {
             for (i = aStart; i <= aEnd; i++) {
                 aNode = a[i];
-                if (patched < bLength) {
+                if (patched < bLeft) {
                     for (j = bStart; j <= bEnd; j++) {
                         bNode = b[j];
                         if (aNode.key === bNode.key) {
@@ -1712,7 +1649,7 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
             // Try to patch same keys
             for (i = aStart; i <= aEnd; i++) {
                 aNode = a[i];
-                if (patched < bLength) {
+                if (patched < bLeft) {
                     j = keyIndex.get(aNode.key);
                     if (!isUndefined(j)) {
                         bNode = b[j];
@@ -1734,9 +1671,9 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
             }
         }
         // fast-path: if nothing patched remove all old and add all new
-        if (aLength === a.length && patched === 0) {
+        if (aLeft === aLength && patched === 0) {
             removeAllChildren(dom, a, lifecycle, isRecycling);
-            while (bStart < bLength) {
+            while (bStart < bLeft) {
                 node = b[bStart];
                 if (node.dom) {
                     b[bStart] = node = directClone(node);
@@ -1746,7 +1683,7 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
             }
         }
         else {
-            i = aLength - patched;
+            i = aLeft - patched;
             while (i > 0) {
                 aNode = a[aStart++];
                 if (!isNull(aNode)) {
@@ -1757,7 +1694,7 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
             if (moved) {
                 var seq = lis_algorithm(sources);
                 j = seq.length - 1;
-                for (i = bLength - 1; i >= 0; i--) {
+                for (i = bLeft - 1; i >= 0; i--) {
                     if (sources[i] === -1) {
                         pos = i + bStart;
                         node = b[pos];
@@ -1765,16 +1702,14 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
                             b[pos] = node = directClone(node);
                         }
                         nextPos = pos + 1;
-                        nextNode = nextPos < b.length ? b[nextPos].dom : null;
-                        insertOrAppend(dom, mount(node, null, lifecycle, context, isSVG), nextNode);
+                        insertOrAppend(dom, mount(node, null, lifecycle, context, isSVG), nextPos < bLength ? b[nextPos].dom : null);
                     }
                     else {
                         if (j < 0 || i !== seq[j]) {
                             pos = i + bStart;
                             node = b[pos];
                             nextPos = pos + 1;
-                            nextNode = nextPos < b.length ? b[nextPos].dom : null;
-                            insertOrAppend(dom, node.dom, nextNode);
+                            insertOrAppend(dom, node.dom, nextPos < bLength ? b[nextPos].dom : null);
                         }
                         else {
                             j--;
@@ -1782,10 +1717,10 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
                     }
                 }
             }
-            else if (patched !== bLength) {
+            else if (patched !== bLeft) {
                 // when patched count doesn't match b length we need to insert those new ones
                 // loop backwards so we can use insertBefore
-                for (i = bLength - 1; i >= 0; i--) {
+                for (i = bLeft - 1; i >= 0; i--) {
                     if (sources[i] === -1) {
                         pos = i + bStart;
                         node = b[pos];
@@ -1793,8 +1728,7 @@ function patchKeyedChildren(a, b, dom, lifecycle, context, isSVG, isRecycling) {
                             b[pos] = node = directClone(node);
                         }
                         nextPos = pos + 1;
-                        nextNode = nextPos < b.length ? b[nextPos].dom : null;
-                        insertOrAppend(dom, mount(node, null, lifecycle, context, isSVG), nextNode);
+                        insertOrAppend(dom, mount(node, null, lifecycle, context, isSVG), nextPos < bLength ? b[nextPos].dom : null);
                     }
                 }
             }
@@ -1813,31 +1747,30 @@ function lis_algorithm(arr) {
     var len = arr.length;
     for (i = 0; i < len; i++) {
         var arrI = arr[i];
-        if (arrI === -1) {
-            continue;
-        }
-        j = result[result.length - 1];
-        if (arr[j] < arrI) {
-            p[i] = j;
-            result.push(i);
-            continue;
-        }
-        u = 0;
-        v = result.length - 1;
-        while (u < v) {
-            c = ((u + v) / 2) | 0;
-            if (arr[result[c]] < arrI) {
-                u = c + 1;
+        if (arrI !== -1) {
+            j = result[result.length - 1];
+            if (arr[j] < arrI) {
+                p[i] = j;
+                result.push(i);
+                continue;
             }
-            else {
-                v = c;
+            u = 0;
+            v = result.length - 1;
+            while (u < v) {
+                c = ((u + v) / 2) | 0;
+                if (arr[result[c]] < arrI) {
+                    u = c + 1;
+                }
+                else {
+                    v = c;
+                }
             }
-        }
-        if (arrI < arr[result[u]]) {
-            if (u > 0) {
-                p[i] = result[u - 1];
+            if (arrI < arr[result[u]]) {
+                if (u > 0) {
+                    p[i] = result[u - 1];
+                }
+                result[u] = i;
             }
-            result[u] = i;
         }
     }
     u = result.length;
@@ -2194,11 +2127,24 @@ function createClassComponentInstance(vNode, Component, props, context, isSVG, l
     // setState callbacks must fire after render is done when called from componentWillReceiveProps or componentWillMount
     instance._lifecycle = lifecycle;
     instance._unmounted = false;
-    instance._pendingSetState = true;
     instance._isSVG = isSVG;
     if (!isNullOrUndef(instance.componentWillMount)) {
         instance._blockRender = true;
         instance.componentWillMount();
+        if (instance._pendingSetState) {
+            var state = instance.state;
+            var pending = instance._pendingState;
+            if (state === null) {
+                instance.state = pending;
+            }
+            else {
+                for (var key in pending) {
+                    state[key] = pending[key];
+                }
+            }
+            instance._pendingSetState = false;
+            instance._pendingState = null;
+        }
         instance._blockRender = false;
     }
     var childContext;
@@ -2239,7 +2185,6 @@ function createClassComponentInstance(vNode, Component, props, context, isSVG, l
             input.parentVNode = vNode;
         }
     }
-    instance._pendingSetState = false;
     instance._lastInput = input;
     return instance;
 }
@@ -2311,11 +2256,11 @@ function replaceWithNewNode(lastNode, nextNode, parentDom, lifecycle, context, i
     nextNode.dom = dom;
     replaceChild(parentDom, dom, lastNode.dom);
 }
-function replaceChild(parentDom, nextDom, lastDom) {
+function replaceChild(parentDom, newDom, lastDom) {
     if (!parentDom) {
         parentDom = lastDom.parentNode;
     }
-    parentDom.replaceChild(nextDom, lastDom);
+    parentDom.replaceChild(newDom, lastDom);
 }
 function removeChild(parentDom, dom) {
     parentDom.removeChild(dom);
@@ -2357,16 +2302,6 @@ function isSamePropsInnerHTML(dom, props) {
 /**
  * @module Inferno
  */ /** TypeDoc Comment */
-function VNode(children, className, flags, key, props, ref, type) {
-    this.children = children;
-    this.className = className;
-    this.dom = null;
-    this.flags = flags;
-    this.key = key;
-    this.props = props;
-    this.ref = ref;
-    this.type = type;
-}
 /**
  * Creates virtual node
  * @param {number} flags
@@ -2385,7 +2320,16 @@ function createVNode(flags, type, className, children, props, key, ref, noNormal
             ? 4 /* ComponentClass */
             : 8 /* ComponentFunction */;
     }
-    var vNode = new VNode(children === void 0 ? null : children, className === void 0 ? null : className, flags, key === void 0 ? null : key, props === void 0 ? null : props, ref === void 0 ? null : ref, type);
+    var vNode = {
+        children: children === void 0 ? null : children,
+        className: className === void 0 ? null : className,
+        dom: null,
+        flags: flags,
+        key: key === void 0 ? null : key,
+        props: props === void 0 ? null : props,
+        ref: ref === void 0 ? null : ref,
+        type: type
+    };
     if (noNormalise !== true) {
         normalize(vNode);
     }
@@ -2762,7 +2706,7 @@ function linkEvent(data, event) {
  * @module Inferno
  */ /** TypeDoc Comment */
 /* tslint:disable:object-literal-sort-keys */
-var version = "3.8.2";
+var version = "3.9.0";
 // we duplicate it so it plays nicely with different module loading systems
 var index = {
     EMPTY_OBJ: EMPTY_OBJ,
@@ -2837,8 +2781,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
  */ /** TypeDoc Comment */
 var NO_OP = "$NO_OP";
 var ERROR_MSG = "a runtime error occured! Use Inferno in development environment to find the error.";
-// This should be boolean and not reference to window.document
-var isBrowser = !!(typeof window !== "undefined" && window.document);
 // this is MUCH faster than .constructor === Array and instanceof Array
 // in Node 7 and the later versions of V8, slower in older versions though
 var isArray = Array.isArray;
@@ -2928,14 +2870,14 @@ function queueStateChanges(component, newState, callback) {
     }
     var pending = component._pendingState;
     if (isNullOrUndef(pending)) {
-        component._pendingState = pending = newState;
+        component._pendingState = newState;
     }
     else {
         for (var stateKey in newState) {
             pending[stateKey] = newState[stateKey];
         }
     }
-    if (isBrowser && !component._pendingSetState && !component._blockRender) {
+    if (!component._pendingSetState && !component._blockRender) {
         if (!component._updating) {
             component._pendingSetState = true;
             component._updating = true;
@@ -2947,16 +2889,7 @@ function queueStateChanges(component, newState, callback) {
         }
     }
     else {
-        var state = component.state;
-        if (state === null) {
-            component.state = pending;
-        }
-        else {
-            for (var key in pending) {
-                state[key] = pending[key];
-            }
-        }
-        component._pendingState = null;
+        component._pendingSetState = true;
         if (!isNullOrUndef(callback) && component._blockRender) {
             component._lifecycle.addListener(callback.bind(component));
         }
@@ -2974,25 +2907,32 @@ function applyState(component, force, callback) {
         var props = component.props;
         var context = component.context;
         component._pendingState = null;
-        var nextInput = component._updateComponent(prevState, nextState, props, props, context, force, true);
+        var nextInput;
+        var renderOutput = component._updateComponent(prevState, nextState, props, props, context, force, true);
         var didUpdate = true;
-        if (isInvalid(nextInput)) {
+        if (isInvalid(renderOutput)) {
             nextInput = inferno.createVNode(4096 /* Void */, null);
         }
-        else if (nextInput === NO_OP) {
+        else if (renderOutput === NO_OP) {
             nextInput = component._lastInput;
             didUpdate = false;
         }
-        else if (isStringOrNumber(nextInput)) {
-            nextInput = inferno.createVNode(1 /* Text */, null, null, nextInput);
+        else if (isStringOrNumber(renderOutput)) {
+            nextInput = inferno.createVNode(1 /* Text */, null, null, renderOutput);
         }
-        else if (isArray(nextInput)) {
-            throwError();
+        else if (isArray(renderOutput)) {
+            return throwError();
+        }
+        else {
+            nextInput = renderOutput;
         }
         var lastInput = component._lastInput;
         var vNode = component._vNode;
         var parentDom = (lastInput.dom && lastInput.dom.parentNode) ||
             (lastInput.dom = vNode.dom);
+        if (nextInput.flags & 28 /* Component */) {
+            nextInput.parentVNode = vNode;
+        }
         component._lastInput = nextInput;
         if (didUpdate) {
             var childContext;
@@ -3007,6 +2947,10 @@ function applyState(component, force, callback) {
             }
             var lifeCycle = component._lifecycle;
             inferno.internal_patch(lastInput, nextInput, parentDom, lifeCycle, childContext, component._isSVG, false);
+            // If this component was unmounted by its parent, do nothing. This is no-op
+            if (component._unmounted) {
+                return;
+            }
             lifeCycle.trigger();
             if (!isNullOrUndef(component.componentDidUpdate)) {
                 component.componentDidUpdate(props, prevState, context);
@@ -3048,7 +2992,7 @@ var Component = function Component(props, context) {
     this.context = context || inferno.EMPTY_OBJ; // context should not be mutable
 };
 Component.prototype.forceUpdate = function forceUpdate (callback) {
-    if (this._unmounted || !isBrowser) {
+    if (this._unmounted) {
         return;
     }
     applyState(this, true, callback);
@@ -3074,19 +3018,13 @@ Component.prototype._updateComponent = function _updateComponent (prevState, nex
         force) {
         if (prevProps !== nextProps || nextProps === inferno.EMPTY_OBJ) {
             if (!isNullOrUndef(this.componentWillReceiveProps) && !fromSetState) {
-                // keep a copy of state before componentWillReceiveProps
-                var beforeState = combineFrom(this.state);
                 this._blockRender = true;
                 this.componentWillReceiveProps(nextProps, context);
-                this._blockRender = false;
-                var afterState = this.state;
-                if (beforeState !== afterState) {
-                    // if state changed in componentWillReceiveProps, reassign the beforeState
-                    this.state = beforeState;
-                    // set the afterState as pending state so the change gets picked up below
-                    this._pendingSetState = true;
-                    this._pendingState = afterState;
+                // If this component was removed during its own update do nothing...
+                if (this._unmounted) {
+                    return NO_OP;
                 }
+                this._blockRender = false;
             }
             if (this._pendingSetState) {
                 nextState = combineFrom(nextState, this._pendingState);
@@ -3134,11 +3072,6 @@ var infernoComponent = createCommonjsModule(function (module) {
 module.exports = dist$1.default;
 module.exports.default = module.exports;
 });
-
-var babelHelpers = {};
-
-
-
 
 var asyncGenerator = function () {
   function AwaitValue(value) {
@@ -3336,28 +3269,6 @@ var possibleConstructorReturn = function (self, call) {
 
   return call && (typeof call === "object" || typeof call === "function") ? call : self;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-babelHelpers;
 
 var createVNode$4 = inferno.createVNode;
 
@@ -3599,13 +3510,21 @@ var EditForm = function (_Component) {
                 event.stopPropagation();
             }
 
+            // Cache current text
+            var originalText = this.props.node.text;
+            var newText = this.ref.value;
+
             // Update the text
-            this.props.node.set('text', this.ref.value);
+            this.props.node.set('text', newText);
 
             // Disable editing and update
             this.props.node.state('editing', false);
             this.props.node.markDirty();
             this.props.dom._tree.applyChanges();
+
+            if (originalText !== newText) {
+                this.props.dom._tree.emit('node.edited', this.props.node, originalText, newText);
+            }
         }
     }, {
         key: 'render',

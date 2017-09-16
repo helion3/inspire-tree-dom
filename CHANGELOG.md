@@ -1,5 +1,9 @@
 # Changes to Inspire Tree DOM
 
+# 3.0.2
+
+- Restored missing `node.edited` event.
+
 # 3.0.1
 
 - Fixed nodes with empty children arrays showing as folders.
