@@ -63,13 +63,21 @@ export default class EditForm extends Component {
             event.stopPropagation();
         }
 
+        // Cache current text
+        var originalText = this.props.node.text;
+        var newText = this.ref.value;
+
         // Update the text
-        this.props.node.set('text', this.ref.value);
+        this.props.node.set('text', newText);
 
         // Disable editing and update
         this.props.node.state('editing', false);
         this.props.node.markDirty();
         this.props.dom._tree.applyChanges();
+
+        if (originalText !== newText) {
+            this.props.dom._tree.emit('node.edited', this.props.node, originalText, newText);
+        }
     }
 
     render() {

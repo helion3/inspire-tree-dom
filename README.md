@@ -62,6 +62,7 @@ new InspireTreeDOM(tree, {
 - **node.dragover** - `(DragEvent event, int dir)` - Node drag over. dir will be -1 for "above", 0 for "into", 1 for "below".
 - **node.dragstart** - `(DragEvent event)` - Drag start.
 - **node.drop** - `(DragEvent event, TreeNode source, TreeNode target, int index)` - Node was dropped. If target null, node was dropped into the root context.
+- **node.edited** - `(TreeNode node), (string oldValue), (string newValue)` - Node text was altered via inline editing.
 
 #### Overriding DOM Events
 
