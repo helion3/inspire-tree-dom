@@ -111,6 +111,10 @@ export default class ListItem extends Component {
         const nodeId = event.target.dataset.uid;
         const node = this.props.dom._tree.node(nodeId);
 
+        // Due to "protected" mode we can't access any DataTransfer data
+        // during the dragover event, yet we still need to validate this node with the target
+        this.props.dom._activeDragNode = node;
+
         event.dataTransfer.setData('treeId', node.tree().id);
         event.dataTransfer.setData('nodeId', nodeId);
 
@@ -149,8 +153,16 @@ export default class ListItem extends Component {
         event.preventDefault();
         event.stopPropagation();
 
+        var node = this.props.node;
+
         // Remove old classes
         this.unhighlightTarget(event.target);
+
+        var dragNode = this.props.dom._activeDragNode;
+        // Skip if target node is or is a child of the drag node
+        if (dragNode && (dragNode.id === node.id || node.hasAncestor(dragNode))) {
+            return;
+        }
 
         // Indicate active target
         event.target.classList.add('itree-droppable-active');
@@ -181,11 +193,18 @@ export default class ListItem extends Component {
         const nodeId = event.dataTransfer.getData('nodeId');
 
         // Find the drop target
-        const targetId = event.target.dataset.uid;
-        const targetNode = this.props.dom._tree.node(targetId);
+        const targetNode = this.props.node;
 
         // Skip if the node is the target
-        if (nodeId === targetId) {
+        if (nodeId === targetNode.id) {
+            return;
+        }
+
+        // Skip if the target is a child of the dropped node
+        let valid = true;
+        targetNode.recurseUp((n) => valid = nodeId !== n.id);
+
+        if (!valid) {
             return;
         }
 
