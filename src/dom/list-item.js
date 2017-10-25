@@ -158,8 +158,8 @@ export default class ListItem extends Component {
         // Remove old classes
         this.unhighlightTarget(event.target);
 
-        var dragNode = this.props.dom._activeDragNode;
         // Skip if target node is or is a child of the drag node
+        var dragNode = this.props.dom._activeDragNode;
         if (dragNode && (dragNode.id === node.id || node.hasAncestor(dragNode))) {
             return;
         }
