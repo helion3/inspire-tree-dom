@@ -66,7 +66,7 @@
         height: $tree-node-height;
         line-height: $tree-node-height;
         overflow: hidden;
-        padding-left: 30px;
+        padding-left: 42px;
         position: relative;
         text-overflow: ellipsis;
         vertical-align: middle;
@@ -83,8 +83,8 @@
         }
 
         &::before {
-            left: -5px;
-            position: relative;
+            left: 24px;
+            position: absolute;
             top: 50%;
             transform: translateY(-50%);
             vertical-align: top;
