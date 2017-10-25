@@ -42,7 +42,8 @@
     "lint": "scss-lint src/scss/**/*.scss && eslint test src *.js",
     "test": "./node_modules/karma/bin/karma start",
     "watch": "rollup -c -w",
-    "deploy": "DIST=1 rollup -c && DIST=1 MIN=1 rollup -c && DIST=1 node scss.js && DIST=1 MIN=1 node scss.js"
+    "deploy": "DIST=1 rollup -c && DIST=1 MIN=1 rollup -c && DIST=1 node scss.js && DIST=1 MIN=1 node scss.js",
+    "setup": "cp hooks/pre-commit .git/hooks/pre-commit"
   },
   "main": "dist/inspire-tree-dom.js",
   "files": [
