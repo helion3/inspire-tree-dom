@@ -208,15 +208,16 @@ export default class ListItem extends Component {
             return;
         }
 
-        var node;
+        // Get the source tree, it may be another instance
+        var sourceTree;
         if (treeId === this.props.dom._tree.id) {
-            // Node belongs to this tree, get the TreeNode
-            node = this.props.dom._tree.node(nodeId);
+            sourceTree = this.props.dom._tree;
         }
         else {
-            // Node belongs to another tree. Query the tree instance and remove/export the node
-            node = document.querySelector('[data-uid="' + treeId + '"]').inspireTree.node(nodeId).remove();
+            sourceTree = document.querySelector('[data-uid="' + treeId + '"]').inspireTree;
         }
+
+        var node = sourceTree.node(nodeId).remove();
 
         // Determine the insert direction
         var dir = this.getTargetDirection(event);
