@@ -217,7 +217,7 @@ export default class ListItem extends Component {
             sourceTree = document.querySelector('[data-uid="' + treeId + '"]').inspireTree;
         }
 
-        var node = sourceTree.node(nodeId).remove();
+        var node = sourceTree.node(nodeId).remove(true);
 
         // Determine the insert direction
         var dir = this.getTargetDirection(event);

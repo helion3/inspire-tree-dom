@@ -352,7 +352,7 @@ export default class InspireDOM {
         const tree = InspireDOM.getTreeById(treeId);
 
         // Remove the node from its previous context
-        let exported = tree.node(nodeId).remove();
+        let exported = tree.node(nodeId).remove(true);
 
         // Add the node to this tree/level
         var newNode = this._tree.addNode(exported);
