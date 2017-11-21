@@ -22,7 +22,12 @@ export default class Checkbox extends Component {
             checked={this.props.node.checked()}
             indeterminate={this.props.node.indeterminate()}
             onClick={this.click.bind(this)}
-            ref={elem => elem.indeterminate = this.props.indeterminate}
+            ref={elem => {
+                // Check for valid element, this executes on unmount as well
+                if (elem) {
+                    elem.indeterminate = this.props.indeterminate;
+                }
+            }}
             type='checkbox' />);
     }
 }
