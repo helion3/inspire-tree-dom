@@ -325,7 +325,7 @@ export default class ListItem extends Component {
             onDragStart={this.onDragStart.bind(this)}
             onDrop={this.onDrop.bind(this)}
             {...this.getAttributes()}
-            ref={domNode => this.node = this.props.node.itree.ref = domNode}>
+            ref={elem => this.node = this.props.node.itree.ref = elem}>
             { this.renderEditToolbar() }
             <div className='title-wrap'>
                 { this.renderToggle() }
