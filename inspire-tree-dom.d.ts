@@ -2,12 +2,23 @@
 
 declare module "inspire-tree-dom" {
     /**
+     * Validation callback for validating drag node may be dropped into the target.
+     */
+    interface DropTargetValidator {
+        (dragNode: TreeNode, targetNode: TreeNode): boolean;
+    }
+
+    /**
      * Represents a tree DOM configuration object
      */
     interface Config {
         autoLoadMore?: boolean;
         deferredRendering?: boolean;
-        dragAndDrop?: boolean;
+        dragAndDrop?: {
+            enabled?: boolean;
+            validateOn?: string;
+            validate: DropTargetValidator
+        };
         nodeHeight?: number;
         showCheckboxes?: boolean;
         dragTargets?: Array<string>;

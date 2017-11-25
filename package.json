@@ -5,7 +5,7 @@
   "repository": "https://github.com/helion3/inspire-tree-dom",
   "license": "MIT",
   "peerDependencies": {
-    "inspire-tree": "^4.0.1"
+    "inspire-tree": "^4.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.3",

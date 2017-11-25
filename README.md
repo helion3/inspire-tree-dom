@@ -45,7 +45,10 @@ new InspireTreeDOM(tree, {
 
 - **autoLoadMore** - Automatically triggers "Load More" links on scroll. Used with deferrals.
 - **deferredRendering** - Only render nodes as the user clicks to display more. (See "Deferrals" section below.)
-- **dragAndDrop** - Enable drag and drop support.
+- **dragAndDrop**
+    + **enabled** - Enable drag and drop support. Default: false
+    + **validateOn** - Use `dragstart` or `dragover` to determine when "target" nodes are validated. Default: `dragstart`.
+    + **validate** - `(TreeNode dragNode, TreeNode targetNode)` - Custom target node validation.
 - **nodeHeight** - Height (in pixels) of your nodes. Used with deferrals, if `pagination.limit` not provided.
 - **showCheckboxes** - Show checkbox inputs.
 - **tabindex** - Define a tab index for the tree container (used for key nav).
