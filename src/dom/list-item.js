@@ -1,4 +1,5 @@
 import Checkbox from './checkbox';
+import classlist from '../lib/classlist';
 import Component from 'inferno-component';
 import EditToolbar from './edit-toolbar';
 import EmptyList from './empty-list';
@@ -31,10 +32,9 @@ export default class ListItem extends Component {
     getClassNames() {
         let node = this.props.node;
         let state = node.itree.state;
-        let attributes = node.itree.li.attributes;
 
         // Set state classnames
-        let classNames = [];
+        let classNames = classlist(node);
 
         // https://jsperf.com/object-keys-vs-each
         _.each(Object.keys(state), (key) => {
@@ -53,23 +53,6 @@ export default class ListItem extends Component {
         }
 
         classNames.push(node.hasOrWillHaveChildren() ? 'folder' : 'leaf');
-
-        // Append any custom class names
-        let customClasses = attributes.class || attributes.className;
-        if (_.isFunction(customClasses)) {
-            customClasses = customClasses(node);
-        }
-
-        // Append content correctly
-        if (!_.isEmpty(customClasses)) {
-            if (_.isString(customClasses)) {
-                // Support periods for backwards compat with hyperscript-formatted classes
-                classNames = classNames.concat(customClasses.split(/[\s\.]+/));
-            }
-            else if (_.isArray(customClasses)) {
-                classNames = classNames.concat(customClasses);
-            }
-        }
 
         return classNames.join(' ');
     }

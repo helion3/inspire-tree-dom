@@ -1,3 +1,4 @@
+import classlist from '../lib/classlist';
 import Component from 'inferno-component';
 import EditForm from './edit-form';
 import Inferno from 'inferno';
@@ -90,15 +91,19 @@ export default class NodeAnchor extends Component {
 
     render() {
         let node = this.props.node;
-        let attributes = node.itree.a.attributes || {};
-        attributes.className = 'title icon';
+        let attributes = _.clone(node.itree.a.attributes) || {};
         attributes.tabindex = 1;
         attributes.unselectable = 'on';
 
+        // Build and set classnames
+        let classNames = classlist(node, 'a').concat(['title', 'icon']);
+
         if (!this.props.dom.config.showCheckboxes) {
             let folder = this.props.expanded ? 'icon-folder-open' : 'icon-folder';
-            attributes.className += ' ' + (node.itree.icon || (this.props.hasOrWillHaveChildren ? folder : 'icon-file-empty'));
+            classNames.push(node.itree.icon || (this.props.hasOrWillHaveChildren ? folder : 'icon-file-empty'));
         }
+
+        attributes.className = classNames.join(' ');
 
         let content = node.text;
         if (node.editing()) {

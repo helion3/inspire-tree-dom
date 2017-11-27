@@ -76,7 +76,7 @@ describe('Custom Class Names', function() {
         expect($tree.find('li').hasClass('testB')).to.be.true;
     });
 
-    it('appends custom array of class names', function() {
+    it('appends custom array of class names via function', function() {
         var tree = new InspireTree({
             data: [{
                 text: 'A',
@@ -99,5 +99,28 @@ describe('Custom Class Names', function() {
         });
 
         expect($tree.find('li').hasClass('testB')).to.be.true;
+    });
+
+    it('appends custom string class names to anchor', function() {
+        var tree = new InspireTree({
+            data: [{
+                text: 'A',
+                itree: {
+                    a: {
+                        attributes: {
+                            class: 'testA.testB'
+                        }
+                    }
+                }
+            }]
+        });
+
+        var $tree = $('.tree');
+
+        new InspireTreeDOM(tree, {
+            target: $tree
+        });
+
+        expect($tree.find('a').hasClass('testA')).to.be.true;
     });
 });
