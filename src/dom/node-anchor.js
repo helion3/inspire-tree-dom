@@ -91,7 +91,15 @@ export default class NodeAnchor extends Component {
     render() {
         let node = this.props.node;
         let attributes = node.itree.a.attributes || {};
-        attributes.className = 'title icon';
+        let nodeClass = 'title icon';
+        if (attributes.className) {
+            if (attributes.className.indexOf(nodeClass) < 0) {
+                attributes.className += ' ' + nodeClass;
+            }
+        }
+        else {
+            attributes.className = nodeClass;
+        }
         attributes.tabindex = 1;
         attributes.unselectable = 'on';
 
