@@ -140,7 +140,7 @@ export default class InspireDOM {
 
         if (this.config.deferredRendering || this._tree.config.deferredLoading) {
             // Force valid pagination limit based on viewport
-            var limit = this._tree.config.pagination.limit;
+            const limit = this._tree.config.pagination.limit;
             this._tree.config.pagination.limit = limit > 0 ? limit : _.ceil(this.$scrollLayer.clientHeight / this.config.nodeHeight);
 
             // Listen for scrolls for automatic loading
@@ -224,7 +224,7 @@ export default class InspireDOM {
      * @return {InspireTree} Tree instance.
      */
     static getTreeById(id) {
-        var element = document.querySelector('[data-uid="' + id + '"]');
+        const element = document.querySelector('[data-uid="' + id + '"]');
         if (element) {
             return element.inspireTree;
         }
@@ -373,8 +373,8 @@ export default class InspireDOM {
         let exported = node.remove(true);
 
         // Add the node to this tree/level
-        var newNode = this._tree.addNode(exported);
-        var newIndex = this._tree.indexOf(newNode);
+        const newNode = this._tree.addNode(exported);
+        const newIndex = this._tree.indexOf(newNode);
 
         this._tree.emit('node.drop', event, newNode, null, newIndex);
     }

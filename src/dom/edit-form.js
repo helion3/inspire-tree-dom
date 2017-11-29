@@ -64,8 +64,8 @@ export default class EditForm extends Component {
         }
 
         // Cache current text
-        var originalText = this.props.node.text;
-        var newText = this.ref.value;
+        const originalText = this.props.node.text;
+        const newText = this.ref.value;
 
         // Update the text
         this.props.node.set('text', newText);

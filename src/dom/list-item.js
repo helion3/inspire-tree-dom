@@ -90,13 +90,13 @@ export default class ListItem extends Component {
     }
 
     getTargetDirection(event, elem) {
-        var clientY = event.clientY;
-        var targetRect = elem.getBoundingClientRect();
+        const clientY = event.clientY;
+        const targetRect = elem.getBoundingClientRect();
 
-        var yThresholdForAbove = targetRect.top + (targetRect.height / 3);
-        var yThresholdForBelow = targetRect.bottom - (targetRect.height / 3);
+        const yThresholdForAbove = targetRect.top + (targetRect.height / 3);
+        const yThresholdForBelow = targetRect.bottom - (targetRect.height / 3);
 
-        var dir = 0;
+        let dir = 0;
 
         if (clientY <= yThresholdForAbove) {
             dir = -1;
