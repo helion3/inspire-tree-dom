@@ -1,5 +1,5 @@
 /* Inspire Tree DOM
- * @version 3.0.2
+ * @version 4.0.0
  * https://github.com/helion3/inspire-tree-dom
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -12,6 +12,10 @@
 }(this, (function (_$1,InspireTree) { 'use strict';
 
 InspireTree = InspireTree && InspireTree.hasOwnProperty('default') ? InspireTree['default'] : InspireTree;
+
+function unwrapExports (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -31,7 +35,7 @@ var ERROR_MSG = "a runtime error occured! Use Inferno in development environment
 var isBrowser = !!(typeof window !== "undefined" && window.document);
 // this is MUCH faster than .constructor === Array and instanceof Array
 // in Node 7 and the later versions of V8, slower in older versions though
-var isArray = Array.isArray;
+var isArray$$1 = Array.isArray;
 function isStatefulComponent(o) {
     return !isUndefined(o.prototype) && !isUndefined(o.prototype.render);
 }
@@ -247,6 +251,9 @@ function handleEvent(name, lastEvent, nextEvent, dom) {
 function dispatchEvents(event, target, items, count, isClick, eventData) {
     var dom = target;
     while (count > 0) {
+        if (isClick && dom.disabled) {
+            return;
+        }
         var eventsToTrigger = items.get(dom);
         if (eventsToTrigger) {
             count--;
@@ -266,7 +273,7 @@ function dispatchEvents(event, target, items, count, isClick, eventData) {
         // Html Nodes can be nested fe: span inside button in that scenario browser does not handle disabled attribute on parent,
         // because the event listener is on document.body
         // Don't process clicks on disabled elements
-        if (dom === null || (isClick && dom.disabled)) {
+        if (dom === null) {
             return;
         }
     }
@@ -448,7 +455,7 @@ function updateChildOptionGroup(vNode, value) {
     var type = vNode.type;
     if (type === "optgroup") {
         var children = vNode.children;
-        if (isArray(children)) {
+        if (isArray$$1(children)) {
             for (var i = 0, len = children.length; i < len; i++) {
                 updateChildOption(children[i], value);
             }
@@ -466,7 +473,7 @@ function updateChildOption(vNode, value) {
     var dom = vNode.dom;
     // we do this as multiple may have changed
     dom.value = props.value;
-    if ((isArray(value) && value.indexOf(props.value) !== -1) ||
+    if ((isArray$$1(value) && value.indexOf(props.value) !== -1) ||
         props.value === value) {
         dom.selected = true;
     }
@@ -521,7 +528,7 @@ function applyValue$1(vNode, dom, nextPropsOrEmpty, mounting) {
         if (mounting && isNullOrUndef(value)) {
             value = nextPropsOrEmpty.defaultValue;
         }
-        if (isArray(children)) {
+        if (isArray$$1(children)) {
             for (var i = 0, len = children.length; i < len; i++) {
                 updateChildOptionGroup(children[i], value);
             }
@@ -621,13 +628,13 @@ function applyValue$2(nextPropsOrEmpty, dom, mounting) {
  * Currently user must choose either controlled or non-controlled and stick with that
  */
 function processElement(flags, vNode, dom, nextPropsOrEmpty, mounting, isControlled) {
-    if (flags & 512 /* InputElement */) {
+    if ((flags & 512 /* InputElement */) > 0) {
         processInput(vNode, dom, nextPropsOrEmpty, mounting, isControlled);
     }
-    if (flags & 2048 /* SelectElement */) {
+    else if ((flags & 2048 /* SelectElement */) > 0) {
         processSelect(vNode, dom, nextPropsOrEmpty, mounting, isControlled);
     }
-    if (flags & 1024 /* TextareaElement */) {
+    else if ((flags & 1024 /* TextareaElement */) > 0) {
         processTextarea(vNode, dom, nextPropsOrEmpty, mounting, isControlled);
     }
 }
@@ -757,7 +764,7 @@ function hydrateChildren(children, parentDom, lifecycle, context, isSVG) {
             dom = dom.nextSibling;
         }
     }
-    else if (isArray(children)) {
+    else if (isArray$$1(children)) {
         for (var i = 0, len = children.length; i < len; i++) {
             var child = children[i];
             if (!isNull(child) && isObject$$1(child)) {
@@ -991,7 +998,7 @@ function unmount(vNode, parentDom, lifecycle, canRecycle, isRecycling) {
         }
         var children = vNode.children;
         if (!isNullOrUndef(children)) {
-            if (isArray(children)) {
+            if (isArray$$1(children)) {
                 for (var i = 0, len = children.length; i < len; i++) {
                     var child = children[i];
                     if (!isInvalid(child) && isObject$$1(child)) {
@@ -1178,7 +1185,7 @@ function unmountChildren(children, dom, lifecycle, isRecycling) {
     if (isVNode(children)) {
         unmount(children, dom, lifecycle, true, isRecycling);
     }
-    else if (isArray(children)) {
+    else if (isArray$$1(children)) {
         removeAllChildren(dom, children, lifecycle, isRecycling);
     }
     else {
@@ -1279,7 +1286,7 @@ function patchChildren(lastFlags, nextFlags, lastChildren, nextChildren, dom, li
             setTextContent(dom, nextChildren);
         }
         else {
-            if (isArray(nextChildren)) {
+            if (isArray$$1(nextChildren)) {
                 mountArrayChildren(nextChildren, dom, lifecycle, context, isSVG);
             }
             else {
@@ -1296,8 +1303,8 @@ function patchChildren(lastFlags, nextFlags, lastChildren, nextChildren, dom, li
             setTextContent(dom, nextChildren);
         }
     }
-    else if (isArray(nextChildren)) {
-        if (isArray(lastChildren)) {
+    else if (isArray$$1(nextChildren)) {
+        if (isArray$$1(lastChildren)) {
             patchArray = true;
             if (isKeyed(lastChildren, nextChildren)) {
                 patchKeyed = true;
@@ -1308,7 +1315,7 @@ function patchChildren(lastFlags, nextFlags, lastChildren, nextChildren, dom, li
             mountArrayChildren(nextChildren, dom, lifecycle, context, isSVG);
         }
     }
-    else if (isArray(lastChildren)) {
+    else if (isArray$$1(lastChildren)) {
         removeAllChildren(dom, lastChildren, lifecycle, isRecycling);
         mount(nextChildren, dom, lifecycle, context, isSVG);
     }
@@ -1401,7 +1408,7 @@ function patchComponent(lastVNode, nextVNode, parentDom, lifecycle, context, isS
                 else if (isStringOrNumber(nextInput)) {
                     nextInput = createTextVNode(nextInput, null);
                 }
-                else if (isArray(nextInput)) {
+                else if (isArray$$1(nextInput)) {
                     throwError();
                 }
                 else if (isObject$$1(nextInput)) {
@@ -1463,7 +1470,7 @@ function patchComponent(lastVNode, nextVNode, parentDom, lifecycle, context, isS
                 else if (isStringOrNumber(nextInput$1) && nextInput$1 !== NO_OP) {
                     nextInput$1 = createTextVNode(nextInput$1, null);
                 }
-                else if (isArray(nextInput$1)) {
+                else if (isArray$$1(nextInput$1)) {
                     throwError();
                 }
                 else if (isObject$$1(nextInput$1)) {
@@ -1972,7 +1979,7 @@ function mountElement(vNode, parentDom, lifecycle, context, isSVG) {
         }
         else {
             var childrenIsSVG = isSVG === true && vNode.type !== "foreignObject";
-            if (isArray(children)) {
+            if (isArray$$1(children)) {
                 mountArrayChildren(children, dom, lifecycle, context, childrenIsSVG);
             }
             else if (isVNode(children)) {
@@ -2164,7 +2171,7 @@ function createClassComponentInstance(vNode, Component, props, context, isSVG, l
     if (!isNull(options.afterRender)) {
         options.afterRender(instance);
     }
-    if (isArray(input)) {
+    if (isArray$$1(input)) {
         throwError();
     }
     else if (isInvalid(input)) {
@@ -2197,7 +2204,7 @@ function replaceVNode(parentDom, dom, vNode, lifecycle, isRecycling) {
 }
 function createFunctionalComponentInput(vNode, component, props, context) {
     var input = component(props, context);
-    if (isArray(input)) {
+    if (isArray$$1(input)) {
         throwError();
     }
     else if (isInvalid(input)) {
@@ -2229,7 +2236,14 @@ function setTextContent(dom, text) {
     }
 }
 function updateTextContent(dom, text) {
-    dom.firstChild.nodeValue = text;
+    var textNode = dom.firstChild;
+    // Guard against external change on DOM node.
+    if (isNull(textNode)) {
+        setTextContent(dom, text);
+    }
+    else {
+        textNode.nodeValue = text;
+    }
 }
 function appendChild(parentDom, dom) {
     parentDom.appendChild(dom);
@@ -2359,7 +2373,7 @@ function directClone(vNodeToClone) {
         // we need to also clone component children that are in props
         // as the children may also have been hoisted
         if (newChildren) {
-            if (isArray(newChildren)) {
+            if (isArray$$1(newChildren)) {
                 var len = newChildren.length;
                 if (len > 0) {
                     var tmpArray = [];
@@ -2433,7 +2447,7 @@ function cloneVNode(vNodeToClone, props) {
         }
     }
     var newVNode;
-    if (isArray(vNodeToClone)) {
+    if (isArray$$1(vNodeToClone)) {
         var tmpArray = [];
         for (var i = 0, len = vNodeToClone.length; i < len; i++) {
             tmpArray.push(directClone(vNodeToClone[i]));
@@ -2466,7 +2480,7 @@ function cloneVNode(vNodeToClone, props) {
                 // we need to also clone component children that are in props
                 // as the children may also have been hoisted
                 if (newChildren) {
-                    if (isArray(newChildren)) {
+                    if (isArray$$1(newChildren)) {
                         var len$1 = newChildren.length;
                         if (len$1 > 0) {
                             var tmpArray$1 = [];
@@ -2539,7 +2553,7 @@ function _normalizeVNodes(nodes, result, index, currentKey) {
         var n = nodes[index];
         var key = currentKey + "." + index;
         if (!isInvalid(n)) {
-            if (isArray(n)) {
+            if (isArray$$1(n)) {
                 _normalizeVNodes(n, result, 0, key);
             }
             else {
@@ -2575,7 +2589,7 @@ function normalizeVNodes(nodes) {
     // tslint:enable
     for (var i = 0, len = nodes.length; i < len; i++) {
         var n = nodes[i];
-        if (isInvalid(n) || isArray(n)) {
+        if (isInvalid(n) || isArray$$1(n)) {
             var result = (newNodes || nodes).slice(0, i);
             _normalizeVNodes(nodes, result, i, "");
             return result;
@@ -2600,7 +2614,7 @@ function normalizeVNodes(nodes) {
     return newNodes || nodes;
 }
 function normalizeChildren(children) {
-    if (isArray(children)) {
+    if (isArray$$1(children)) {
         return normalizeVNodes(children);
     }
     else if (isVNode(children) && children.dom !== null) {
@@ -2706,7 +2720,7 @@ function linkEvent(data, event) {
  * @module Inferno
  */ /** TypeDoc Comment */
 /* tslint:disable:object-literal-sort-keys */
-var version = "3.9.0";
+var version = "3.10.1";
 // we duplicate it so it plays nicely with different module loading systems
 var index = {
     EMPTY_OBJ: EMPTY_OBJ,
@@ -2743,6 +2757,8 @@ exports.options = options;
 exports.render = render;
 exports.version = version;
 });
+
+unwrapExports(dist);
 
 var inferno = createCommonjsModule(function (module) {
 module.exports = dist.default;
@@ -2783,7 +2799,7 @@ var NO_OP = "$NO_OP";
 var ERROR_MSG = "a runtime error occured! Use Inferno in development environment to find the error.";
 // this is MUCH faster than .constructor === Array and instanceof Array
 // in Node 7 and the later versions of V8, slower in older versions though
-var isArray = Array.isArray;
+var isArray$$1 = Array.isArray;
 function isStringOrNumber(o) {
     var type = typeof o;
     return type === "string" || type === "number";
@@ -2826,23 +2842,26 @@ function combineFrom(first, second) {
     }
     return out;
 }
+function Lifecycle() {
+    this.listeners = [];
+}
+Lifecycle.prototype.addListener = function addListener(callback) {
+    this.listeners.push(callback);
+};
+Lifecycle.prototype.trigger = function trigger() {
+    var listeners = this.listeners;
+    var listener;
+    // We need to remove current listener from array when calling it, because more listeners might be added
+    while ((listener = listeners.shift())) {
+        listener();
+    }
+};
 
 /**
  * @module Inferno-Component
  */ /** TypeDoc Comment */
 // Make sure u use EMPTY_OBJ from 'inferno', otherwise it'll be a different reference
 var componentCallbackQueue = new Map();
-// when a components root VNode is also a component, we can run into issues
-// this will recursively look for vNode.parentNode if the VNode is a component
-function updateParentComponentVNodes(vNode, dom) {
-    if (vNode.flags & 28 /* Component */) {
-        var parentVNode = vNode.parentVNode;
-        if (parentVNode) {
-            parentVNode.dom = dom;
-            updateParentComponentVNodes(parentVNode, dom);
-        }
-    }
-}
 var resolvedPromise = Promise.resolve();
 function addToQueue(component, force, callback) {
     var queue = componentCallbackQueue.get(component);
@@ -2890,7 +2909,7 @@ function queueStateChanges(component, newState, callback) {
     }
     else {
         component._pendingSetState = true;
-        if (!isNullOrUndef(callback) && component._blockRender) {
+        if (isFunction$$1(callback) && component._blockRender) {
             component._lifecycle.addListener(callback.bind(component));
         }
     }
@@ -2920,7 +2939,7 @@ function applyState(component, force, callback) {
         else if (isStringOrNumber(renderOutput)) {
             nextInput = inferno.createVNode(1 /* Text */, null, null, renderOutput);
         }
-        else if (isArray(renderOutput)) {
+        else if (isArray$$1(renderOutput)) {
             return throwError();
         }
         else {
@@ -2963,13 +2982,17 @@ function applyState(component, force, callback) {
         if (inferno.options.findDOMNodeEnabled) {
             inferno.internal_DOMNodeMap.set(component, nextInput.dom);
         }
-        updateParentComponentVNodes(vNode, dom);
+        while (!isNullOrUndef((vNode = vNode.parentVNode))) {
+            if ((vNode.flags & 28 /* Component */) > 0) {
+                vNode.dom = dom;
+            }
+        }
     }
     else {
         component.state = component._pendingState;
         component._pendingState = null;
     }
-    if (!isNullOrUndef(callback)) {
+    if (isFunction$$1(callback)) {
         callback.call(component);
     }
 }
@@ -3067,6 +3090,8 @@ Component.prototype.render = function render (nextProps, nextState, nextContext)
 
 exports['default'] = Component;
 });
+
+unwrapExports(dist$1);
 
 var infernoComponent = createCommonjsModule(function (module) {
 module.exports = dist$1.default;
@@ -3301,20 +3326,51 @@ var Checkbox = function (_Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
-
             return createVNode$4(512, 'input', null, null, {
                 'checked': this.props.node.checked(),
-                'indeterminate': this.props.node.indeterminate(),
+                'indeterminate': this.props.indeterminate,
                 'onClick': this.click.bind(this),
                 'type': 'checkbox'
-            }, null, function (elem) {
-                return elem.indeterminate = _this3.props.indeterminate;
             });
         }
     }]);
     return Checkbox;
 }(infernoComponent);
+
+/**
+ * Utility method for parsing and merging custom class names.
+ *
+ * @private
+ * @param {TreeNode} node Node object.
+ * @param {string} type 'li' or 'a' attribute object type.
+ * @return {Array} Processed class names
+ */
+var classlist = (function (node) {
+    var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'li';
+
+    var nodeAttrs = node.itree[type].attributes;
+    var classNames = [];
+
+    // Append any custom class names
+    var customClasses = nodeAttrs.class || nodeAttrs.className;
+
+    // Support callbacks
+    if (_$1.isFunction(customClasses)) {
+        customClasses = customClasses(node);
+    }
+
+    // Convert custom classes into an array and concat
+    if (!_$1.isEmpty(customClasses)) {
+        if (_$1.isString(customClasses)) {
+            // Support periods for backwards compat with hyperscript-formatted classes
+            classNames = classNames.concat(customClasses.split(/[\s\.]+/));
+        } else if (_$1.isArray(customClasses)) {
+            classNames = classNames.concat(customClasses);
+        }
+    }
+
+    return classNames;
+});
 
 var createVNode$5 = inferno.createVNode;
 
@@ -3673,15 +3729,19 @@ var NodeAnchor = function (_Component) {
         key: 'render',
         value: function render() {
             var node = this.props.node;
-            var attributes = node.itree.a.attributes || {};
-            attributes.className = 'title icon';
+            var attributes = _.clone(node.itree.a.attributes) || {};
             attributes.tabindex = 1;
             attributes.unselectable = 'on';
 
+            // Build and set classnames
+            var classNames = classlist(node, 'a').concat(['title', 'icon']);
+
             if (!this.props.dom.config.showCheckboxes) {
                 var folder = this.props.expanded ? 'icon-folder-open' : 'icon-folder';
-                attributes.className += ' ' + (node.itree.icon || (this.props.hasOrWillHaveChildren ? folder : 'icon-file-empty'));
+                classNames.push(node.itree.icon || (this.props.hasOrWillHaveChildren ? folder : 'icon-file-empty'));
             }
+
+            attributes.className = classNames.join(' ');
 
             var content = node.text;
             if (node.editing()) {
@@ -3763,14 +3823,44 @@ var ListItem = function (_Component) {
             return nextState.dirty;
         }
     }, {
+        key: 'getAttributes',
+        value: function getAttributes() {
+            var node = this.props.node;
+            var attributes = _.clone(node.itree.li.attributes) || {};
+            attributes.className = this.getClassNames();
+
+            // Force internal-use attributes
+            attributes['data-uid'] = node.id;
+
+            // Allow drag and drop?
+            if (this.props.dom.config.dragAndDrop.enabled) {
+                attributes.draggable = node.state('draggable');
+                attributes.onDragEnd = this.onDragEnd.bind(this);
+                attributes.onDragEnter = this.onDragEnter.bind(this);
+                attributes.onDragLeave = this.onDragLeave.bind(this);
+                attributes.onDragStart = this.onDragStart.bind(this);
+
+                // Are we a valid drop target?
+                if (node.state('drop-target')) {
+                    attributes.onDragOver = this.onDragOver.bind(this);
+                    attributes.onDrop = this.onDrop.bind(this);
+                } else {
+                    // Setting to null forces removal of prior listeners
+                    attributes.onDragOver = null;
+                    attributes.onDrop = null;
+                }
+            }
+
+            return attributes;
+        }
+    }, {
         key: 'getClassNames',
         value: function getClassNames() {
             var node = this.props.node;
             var state = node.itree.state;
-            var attributes = node.itree.li.attributes;
 
             // Set state classnames
-            var classNames = [];
+            var classNames = classlist(node);
 
             // https://jsperf.com/object-keys-vs-each
             _.each(Object.keys(state), function (key) {
@@ -3790,41 +3880,13 @@ var ListItem = function (_Component) {
 
             classNames.push(node.hasOrWillHaveChildren() ? 'folder' : 'leaf');
 
-            // Append any custom class names
-            var customClasses = attributes.class || attributes.className;
-            if (_.isFunction(customClasses)) {
-                customClasses = customClasses(node);
-            }
-
-            // Append content correctly
-            if (!_.isEmpty(customClasses)) {
-                if (_.isString(customClasses)) {
-                    // Support periods for backwards compat with hyperscript-formatted classes
-                    classNames = classNames.concat(customClasses.split(/[\s\.]+/));
-                } else if (_.isArray(customClasses)) {
-                    classNames = classNames.concat(customClasses);
-                }
-            }
-
             return classNames.join(' ');
         }
     }, {
-        key: 'getAttributes',
-        value: function getAttributes() {
-            var node = this.props.node;
-            var attributes = _.clone(node.itree.li.attributes) || {};
-            attributes.className = this.getClassNames();
-
-            // Force internal-use attributes
-            attributes['data-uid'] = node.id;
-
-            return attributes;
-        }
-    }, {
         key: 'getTargetDirection',
-        value: function getTargetDirection(event) {
+        value: function getTargetDirection(event, elem) {
             var clientY = event.clientY;
-            var targetRect = event.target.getBoundingClientRect();
+            var targetRect = elem.getBoundingClientRect();
 
             var yThresholdForAbove = targetRect.top + targetRect.height / 3;
             var yThresholdForBelow = targetRect.bottom - targetRect.height / 3;
@@ -3842,14 +3904,69 @@ var ListItem = function (_Component) {
     }, {
         key: 'onDragStart',
         value: function onDragStart(event) {
+            event.stopPropagation();
+
             event.dataTransfer.effectAllowed = 'move';
             event.dataTransfer.dropEffect = 'move';
 
-            var nodeId = event.target.dataset.uid;
-            var node = this.props.dom._tree.node(nodeId);
+            var node = this.props.node;
+
+            // Due to "protected" mode we can't access any DataTransfer data
+            // during the dragover event, yet we still need to validate this node with the target
+            this.props.dom._activeDragNode = node;
 
             event.dataTransfer.setData('treeId', node.tree().id);
-            event.dataTransfer.setData('nodeId', nodeId);
+            event.dataTransfer.setData('nodeId', node.id);
+
+            // Disable self and children as drop targets
+            node.state('drop-target', false);
+
+            if (node.hasChildren()) {
+                node.children.stateDeep('drop-target', false);
+            }
+
+            // If we should validate all nodes as potential drop targets on drag start
+            if (this.props.dom.config.dragAndDrop.validateOn === 'dragstart') {
+                var validator = this.props.dom.config.dragAndDrop.validate;
+                var validateCallable = _.isFunction(validator);
+
+                // Validate with a custom recursor because a return of "false"
+                // should mean "do not descend" rather than "stop iterating"
+                var recursor = function recursor(obj, iteratee) {
+                    if (InspireTree.isTreeNodes(obj)) {
+                        _.each(obj, function (n) {
+                            recursor(n, iteratee);
+                        });
+                    } else if (InspireTree.isTreeNode(obj)) {
+                        if (iteratee(obj) !== false && obj.hasChildren()) {
+                            recursor(obj.children, iteratee);
+                        }
+                    }
+                };
+
+                this.props.dom._tree.batch();
+
+                recursor(this.props.dom._tree.model, function (n) {
+                    var valid = n.id !== node.id;
+
+                    // Ensure target node isn't a descendant
+                    if (valid) {
+                        valid = !n.hasAncestor(node);
+                    }
+
+                    // If still valid and user has additional validation...
+                    if (valid && validateCallable) {
+                        valid = validator(node, n);
+                    }
+
+                    // Set state
+                    n.state('drop-target', valid);
+
+                    return valid;
+                });
+
+                this.props.dom._tree.end();
+            }
 
             this.props.dom._tree.emit('node.dragstart', event);
         }
@@ -3859,7 +3976,7 @@ var ListItem = function (_Component) {
             event.preventDefault();
             event.stopPropagation();
 
-            this.unhighlightTarget(event.target);
+            this.unhighlightTarget();
 
             this.props.dom._tree.emit('node.dragend', event);
         }
@@ -3869,8 +3986,11 @@ var ListItem = function (_Component) {
             event.preventDefault();
             event.stopPropagation();
 
-            // Highlight a new target
-            event.target.classList.add('itree-droppable-active');
+            // Nodes already within parents don't trigger enter/leave events on their ancestors
+            this.props.node.recurseUp(this.unhighlightTarget);
+
+            // Set drag target state
+            this.props.node.state('drag-targeting', true);
 
             this.props.dom._tree.emit('node.dragenter', event);
         }
@@ -3880,7 +4000,7 @@ var ListItem = function (_Component) {
             event.preventDefault();
             event.stopPropagation();
 
-            this.unhighlightTarget(event.target);
+            this.unhighlightTarget();
 
             this.props.dom._tree.emit('node.dragleave', event);
         }
@@ -3890,21 +4010,43 @@ var ListItem = function (_Component) {
             event.preventDefault();
             event.stopPropagation();
 
-            // Remove old classes
-            this.unhighlightTarget(event.target);
+            var dragNode = this.props.dom._activeDragNode;
+            var node = this.props.node;
 
-            // Indicate active target
-            event.target.classList.add('itree-droppable-active');
+            // Event.target doesn't always match the element we need to calculate
+            var dir = this.getTargetDirection(event, node.itree.ref.querySelector('a'));
 
-            var dir = this.getTargetDirection(event);
+            if (this.props.dom.config.dragAndDrop.validateOn === 'dragover') {
+                // Validate drop target
+                var validator = this.props.dom.config.dragAndDrop.validate;
+                var validateCallable = _.isFunction(validator);
 
-            if (dir === -1) {
-                event.target.classList.add('itree-droppable-target-above');
-            } else if (dir === 1) {
-                event.target.classList.add('itree-droppable-target-below');
-            } else {
-                event.target.classList.add('itree-droppable-target');
+                var valid = dragNode.id !== node.id;
+
+                if (valid) {
+                    valid = !node.hasAncestor(dragNode);
+                }
+
+                if (valid && validateCallable) {
+                    valid = validator(dragNode, node, dir);
+                }
+
+                // Set state
+                node.state('drop-target', valid);
+                this.props.dom._tree.applyChanges();
+
+                if (!valid) {
+                    return;
+                }
             }
+
+            // Set drag target states
+            this.props.dom._tree.batch();
+            node.state('drag-targeting', true);
+            node.state('drag-targeting-above', dir === -1);
+            node.state('drag-targeting-below', dir === 1);
+            node.state('drag-targeting-insert', dir === 0);
+            this.props.dom._tree.end();
 
             this.props.dom._tree.emit('node.dragover', event, dir);
         }
@@ -3914,42 +4056,42 @@ var ListItem = function (_Component) {
             event.preventDefault();
             event.stopPropagation();
 
-            this.unhighlightTarget(event.target);
+            // Always unhighlight target
+            this.unhighlightTarget();
 
             // Get the data from our transfer
             var treeId = event.dataTransfer.getData('treeId');
             var nodeId = event.dataTransfer.getData('nodeId');
 
             // Find the drop target
-            var targetId = event.target.dataset.uid;
-            var targetNode = this.props.dom._tree.node(targetId);
+            var targetNode = this.props.node;
 
-            // Skip if the node is the target
-            if (nodeId === targetId) {
-                return;
-            }
+            // Clear cache
+            this.props.dom._activeDragNode = null;
 
-            // Get the source tree, it may be another instance
-            var sourceTree;
+            // Determine the insert direction (calc before removing source node, which modifies the DOM)
+            var dir = this.getTargetDirection(event, event.target);
+
+            var sourceTree = void 0;
             if (treeId === this.props.dom._tree.id) {
                 sourceTree = this.props.dom._tree;
             } else {
                 sourceTree = document.querySelector('[data-uid="' + treeId + '"]').inspireTree;
             }
 
-            var node = sourceTree.node(nodeId).remove();
+            var node = sourceTree.node(nodeId);
+            node.state('drop-target', true);
 
-            // Determine the insert direction
-            var dir = this.getTargetDirection(event);
+            var exported = node.remove(true);
 
             // Get the index of the target node
             var targetIndex = targetNode.context().indexOf(targetNode);
 
-            var newNode;
-            var newIndex;
+            var newNode = void 0,
+                newIndex = void 0;
             if (dir === 0) {
                 // Add as a child
-                newNode = targetNode.addChild(node);
+                newNode = targetNode.addChild(exported);
 
                 // Cache the new index
                 newIndex = targetNode.children.indexOf(newNode);
@@ -3961,7 +4103,7 @@ var ListItem = function (_Component) {
                 newIndex = dir === 1 ? ++targetIndex : targetIndex;
 
                 // Insert and cache the node
-                newNode = targetNode.context().insertAt(newIndex, node);
+                newNode = targetNode.context().insertAt(newIndex, exported);
             }
 
             this.props.dom._tree.emit('node.drop', event, newNode, targetNode, newIndex);
@@ -3969,9 +4111,7 @@ var ListItem = function (_Component) {
     }, {
         key: 'unhighlightTarget',
         value: function unhighlightTarget(node) {
-            if (node) {
-                node.classList.remove('itree-droppable-target-above', 'itree-droppable-target-below', 'itree-droppable-target', 'itree-droppable-active');
-            }
+            (node || this.props.node).states(['drag-targeting', 'drag-targeting-above', 'drag-targeting-below', 'drag-targeting-insert'], false);
         }
     }, {
         key: 'renderCheckbox',
@@ -4058,16 +4198,8 @@ var ListItem = function (_Component) {
                 'hasOrWillHaveChildren': node.hasOrWillHaveChildren(),
                 'node': node,
                 'text': node.text
-            })]), createVNode$3(2, 'div', 'wholerow'), this.renderChildren()], _extends({
-                'draggable': this.props.dom.config.dragAndDrop,
-                'onDragEnd': this.onDragEnd.bind(this),
-                'onDragEnter': this.onDragEnter.bind(this),
-                'onDragLeave': this.onDragLeave.bind(this),
-                'onDragOver': this.onDragOver.bind(this),
-                'onDragStart': this.onDragStart.bind(this),
-                'onDrop': this.onDrop.bind(this)
-            }, this.getAttributes()), null, function (domNode) {
-                return _this2.node = _this2.props.node.itree.ref = domNode;
+            })]), createVNode$3(2, 'div', 'wholerow'), this.renderChildren()], _extends({}, this.getAttributes()), null, function (elem) {
+                return _this2.node = _this2.props.node.itree.ref = elem;
             });
 
             // Clear dirty bool only after everything has been generated (and states set)
@@ -4252,16 +4384,27 @@ var InspireDOM = function () {
         // Let InspireTree know we're in control of a node's `rendered` state
         tree.usesNativeDOM = true;
 
+        var dndDefaults = {
+            enabled: false,
+            validateOn: 'dragstart',
+            validate: null
+        };
+
         // Assign defaults
-        this.config = _$1.defaults({}, opts, {
+        this.config = _$1.defaultsDeep({}, opts, {
             autoLoadMore: true,
             deferredRendering: false,
-            dragAndDrop: false,
+            dragAndDrop: dndDefaults,
             nodeHeight: 25,
             showCheckboxes: false,
             tabindex: -1,
             target: false
         });
+
+        if (opts.dragAndDrop === true) {
+            this.config.dragAndDrop = dndDefaults;
+            this.config.dragAndDrop.enabled = true;
+        }
 
         // If user didn't specify showCheckboxes,
         // but is using checkbox selection mode,
@@ -4334,11 +4477,13 @@ var InspireDOM = function () {
             this.$target.addEventListener('keyup', this.keyboardListener.bind(this));
 
             // Drag and drop listeners
-            if (this.config.dragAndDrop) {
+            if (this.config.dragAndDrop.enabled) {
                 this.$target.addEventListener('dragenter', this.onDragEnter.bind(this), false);
                 this.$target.addEventListener('dragleave', this.onDragLeave.bind(this), false);
                 this.$target.addEventListener('dragover', this.onDragOver.bind(this), false);
                 this.$target.addEventListener('drop', this.onDrop.bind(this), false);
+
+                this.$target.classList.add('drag-and-drop');
             }
 
             // Sync browser focus to focus state
@@ -4545,7 +4690,7 @@ var InspireDOM = function () {
         value: function onDragEnter(event) {
             event.preventDefault();
 
-            event.target.classList.add('itree-droppable-active');
+            event.target.classList.add('drag-targeting', 'drag-targeting-insert');
         }
 
         /**
@@ -4594,14 +4739,19 @@ var InspireDOM = function () {
         value: function onDrop(event) {
             event.preventDefault();
 
+            this.unhighlightTarget(event.target);
+
             var treeId = event.dataTransfer.getData('treeId');
             var nodeId = event.dataTransfer.getData('nodeId');
 
             // Find the tree
             var tree = InspireDOM.getTreeById(treeId);
+            var node = tree.node(nodeId);
+
+            node.state('drop-target', true);
 
             // Remove the node from its previous context
-            var exported = tree.node(nodeId).remove();
+            var exported = node.remove(true);
 
             // Add the node to this tree/level
             var newNode = this._tree.addNode(exported);
@@ -4692,15 +4842,15 @@ var InspireDOM = function () {
          *
          * @category DOM
          * @private
-         * @param {HTMLElement} node Target element.
+         * @param {HTMLElement} element Target element.
          * @return {void}
          */
 
     }, {
         key: 'unhighlightTarget',
-        value: function unhighlightTarget(node) {
-            if (node) {
-                node.classList.remove('itree-droppable-active');
+        value: function unhighlightTarget(element) {
+            if (element) {
+                element.classList.remove('drag-targeting', 'drag-targeting-insert');
             }
         }
     }], [{

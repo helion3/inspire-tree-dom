@@ -99,7 +99,7 @@
     height: 25px;
     line-height: 25px;
     overflow: hidden;
-    padding-left: 30px;
+    padding-left: 42px;
     position: relative;
     text-overflow: ellipsis;
     vertical-align: middle;
@@ -111,8 +111,8 @@
       .inspire-tree .title.load-more:hover {
         text-decoration: underline; }
     .inspire-tree .title::before {
-      left: -5px;
-      position: relative;
+      left: 24px;
+      position: absolute;
       top: 50%;
       -webkit-transform: translateY(-50%);
               transform: translateY(-50%);
@@ -120,13 +120,17 @@
     .inspire-tree .title:focus {
       outline: none; }
 
-.itree-droppable-active.itree-droppable-target {
+.inspire-tree.drag-and-drop li:not(.drop-target) {
+  opacity: .5; }
+
+.drag-targeting.drag-targeting-insert.inspire-tree,
+.drag-targeting.drag-targeting-insert > .title-wrap > .title {
   border: 1px solid #2dadc5; }
 
-.itree-droppable-active.itree-droppable-target-above {
+.drag-targeting.drag-targeting-above > .title-wrap > .title {
   border-top: 3px solid #2dadc5; }
 
-.itree-droppable-active.itree-droppable-target-below {
+.drag-targeting.drag-targeting-below > .title-wrap > .title {
   border-bottom: 3px solid #2dadc5; }
 
 .inspire-tree .editable form {

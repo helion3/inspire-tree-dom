@@ -1,5 +1,21 @@
 # Changes to Inspire Tree DOM
 
+# 4.0.0
+
+- Improved node drag target validation.
+- Refactored drag and drop to use node states instead of manual class manipulation.
+- Fixed custom css class logic for node anchors.
+- Fixed node title overflow error in chrome.
+- Removed duplicate `indeterminate` logic for checkboxes.
+
+**Breaking Changes**
+
+- Requires InspireTree v4.2+.
+- Drag and drop css classes have changed:
+- `itree-droppable-active.itree-droppable-target` -> `.drag-targeting.drag-targeting-insert`
+- `itree-droppable-active.itree-droppable-target-above` -> `.drag-targeting.drag-targeting-above`
+- `itree-droppable-active.itree-droppable-target-below` -> `.drag-targeting.drag-targeting-below`
+
 # 3.0.2
 
 - Restored missing `node.edited` event.
