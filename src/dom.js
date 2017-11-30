@@ -249,15 +249,13 @@ export default class InspireDOM {
         }
 
         // Navigation
-        let focusedNode = this._tree.focused();
-        if (focusedNode) {
-            focusedNode = focusedNode[0];
-
+        const focusedNodes = this._tree.focused();
+        if (focusedNodes.length) {
             event.preventDefault();
 
             switch (event.which) {
                 case keys.DOWN_ARROW:
-                    this.moveFocusDownFrom(focusedNode);
+                    this.moveFocusDownFrom(focusedNodes[0]);
                     break;
                 case keys.ENTER:
                     focusedNode.toggleSelect();
@@ -269,7 +267,7 @@ export default class InspireDOM {
                     focusedNode.expand();
                     break;
                 case keys.UP_ARROW:
-                    this.moveFocusUpFrom(focusedNode);
+                    this.moveFocusUpFrom(focusedNodes[0]);
                     break;
                 default:
             }
