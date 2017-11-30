@@ -1,4 +1,5 @@
 import Component from 'inferno-component';
+import { ENTER } from '../lib/keycodes';
 import Inferno from 'inferno';
 import stateComparator from '../lib/state-comparator';
 
@@ -39,7 +40,7 @@ export default class EditForm extends Component {
     }
 
     keypress(event) {
-        if (event.which === 13) {
+        if (event.which === ENTER) {
             return this.save();
         }
     }

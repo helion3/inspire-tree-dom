@@ -2,6 +2,7 @@
 
 // Libs
 import * as _ from 'lodash';
+import * as keys from './lib/keycodes';
 import { render } from 'inferno';
 import Inferno from 'inferno';
 import InspireTree from 'inspire-tree';
@@ -118,7 +119,7 @@ export default class InspireDOM {
         this.$target.setAttribute('tabindex', this.config.tabindex || 0);
 
         // Handle keyboard interaction
-        this.$target.addEventListener('keyup', this.keyboardListener.bind(this));
+        this.$target.addEventListener('keydown', this.keyboardListener.bind(this));
 
         // Drag and drop listeners
         if (this.config.dragAndDrop.enabled) {
@@ -239,24 +240,35 @@ export default class InspireDOM {
      * @return {void}
      */
     keyboardListener(event) {
+        event.stopPropagation();
+
+        // Ignore keys we won't care for.
+        // For example, this avoids trampling cmd+reload
+        if ([keys.DOWN_ARROW, keys.ENTER, keys.LEFT_ARROW, keys.RIGHT_ARROW, keys.UP_ARROW].indexOf(event.which) >= 0) {
+            return;
+        }
+
         // Navigation
         let focusedNode = this._tree.focused();
         if (focusedNode) {
             focusedNode = focusedNode[0];
+
+            event.preventDefault();
+
             switch (event.which) {
-                case 40:
+                case keys.DOWN_ARROW:
                     this.moveFocusDownFrom(focusedNode);
                     break;
-                case 13:
+                case keys.ENTER:
                     focusedNode.toggleSelect();
                     break;
-                case 37:
+                case keys.LEFT_ARROW:
                     focusedNode.collapse();
                     break;
-                case 39:
+                case keys.RIGHT_ARROW:
                     focusedNode.expand();
                     break;
-                case 38:
+                case keys.UP_ARROW:
                     this.moveFocusUpFrom(focusedNode);
                     break;
                 default:
