@@ -18,6 +18,7 @@
     "eslint-plugin-inferno": "^7.0.1",
     "inferno": "^3.8.2",
     "inferno-component": "^3.8.2",
+    "inspire-tree": "^4.2.0",
     "jquery": "^3.2.1",
     "karma": "^1.7.1",
     "karma-chai-plugins": "^0.9.0",
@@ -46,6 +47,7 @@
     "setup": "cp hooks/pre-commit .git/hooks/pre-commit"
   },
   "main": "dist/inspire-tree-dom.js",
+  "types": "inspire-tree-dom.d.ts",
   "files": [
     "dist",
     "src",
