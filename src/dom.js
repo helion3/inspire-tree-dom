@@ -258,13 +258,13 @@ export default class InspireDOM {
                     this.moveFocusDownFrom(focusedNodes[0]);
                     break;
                 case keys.ENTER:
-                    focusedNode.toggleSelect();
+                    focusedNodes[0].toggleSelect();
                     break;
                 case keys.LEFT_ARROW:
-                    focusedNode.collapse();
+                    focusedNodes[0].collapse();
                     break;
                 case keys.RIGHT_ARROW:
-                    focusedNode.expand();
+                    focusedNodes[0].expand();
                     break;
                 case keys.UP_ARROW:
                     this.moveFocusUpFrom(focusedNodes[0]);
