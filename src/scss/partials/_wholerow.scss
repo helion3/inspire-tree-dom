@@ -14,7 +14,7 @@
     }
 
     .focused:not(.selected) > .wholerow {
-        outline: 1px dotted #000;
+        outline: 1px dotted $tree-row-focused-color;
     }
 
     .title-wrap:hover + .wholerow {
