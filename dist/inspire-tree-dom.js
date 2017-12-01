@@ -1,5 +1,5 @@
 /* Inspire Tree DOM
- * @version 4.0.2
+ * @version 4.0.3
  * https://github.com/helion3/inspire-tree-dom
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -4623,13 +4623,13 @@ var InspireDOM = function () {
                         this.moveFocusDownFrom(focusedNodes[0]);
                         break;
                     case ENTER:
-                        focusedNode.toggleSelect();
+                        focusedNodes[0].toggleSelect();
                         break;
                     case LEFT_ARROW:
-                        focusedNode.collapse();
+                        focusedNodes[0].collapse();
                         break;
                     case RIGHT_ARROW:
-                        focusedNode.expand();
+                        focusedNodes[0].expand();
                         break;
                     case UP_ARROW:
                         this.moveFocusUpFrom(focusedNodes[0]);

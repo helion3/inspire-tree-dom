@@ -1,8 +1,13 @@
 # Changes to Inspire Tree DOM
 
+# 4.0.3
+
+- Fixed color of focused wholerow border for dark theme.
+- Fixed left/right/enter keys using an invalid variable.
+
 # 4.0.2
 
-- Fixes keyboard navigation error caused by linter fix regression.
+- Fixed keyboard navigation error caused by linter fix regression.
 
 # 4.0.1
 

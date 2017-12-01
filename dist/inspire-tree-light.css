@@ -298,7 +298,7 @@
   z-index: 1; }
 
 .inspire-tree .focused:not(.selected) > .wholerow {
-  outline: 1px dotted #000; }
+  outline: 1px dotted black; }
 
 .inspire-tree .title-wrap:hover + .wholerow {
   background: rgba(218, 250, 255, 0.5); }
