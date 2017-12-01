@@ -1,5 +1,9 @@
 # Changes to Inspire Tree DOM
 
+# 4.0.2
+
+- Fixes keyboard navigation error caused by linter fix regression.
+
 # 4.0.1
 
 - Fixed keyboard navigation also causing browser scroll behavior.

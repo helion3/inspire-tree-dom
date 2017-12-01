@@ -1,5 +1,5 @@
 /* Inspire Tree DOM
- * @version 4.0.1
+ * @version 4.0.2
  * https://github.com/helion3/inspire-tree-dom
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -4609,7 +4609,7 @@ var InspireDOM = function () {
 
             // Ignore keys we won't care for.
             // For example, this avoids trampling cmd+reload
-            if ([DOWN_ARROW, ENTER, LEFT_ARROW, RIGHT_ARROW, UP_ARROW].indexOf(event.which) >= 0) {
+            if ([DOWN_ARROW, ENTER, LEFT_ARROW, RIGHT_ARROW, UP_ARROW].indexOf(event.which) < 0) {
                 return;
             }
 
