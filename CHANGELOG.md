@@ -1,5 +1,12 @@
 # Changes to Inspire Tree DOM
 
+# 4.0.1
+
+- Fixed keyboard navigation also causing browser scroll behavior.
+- Fixed script error when pressing an arrow key after a node has lost focus.
+- Improved typescript definition file (Requires InspireTree v4.2.1).
+- Moved two npm dependencies to the dependencies array to support ES6 users.
+
 # 4.0.0
 
 - Improved node drag target validation.

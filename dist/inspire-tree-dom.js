@@ -1,5 +1,5 @@
 /* Inspire Tree DOM
- * @version 4.0.0
+ * @version 4.0.1
  * https://github.com/helion3/inspire-tree-dom
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -12,6 +12,12 @@
 }(this, (function (_$1,InspireTree) { 'use strict';
 
 InspireTree = InspireTree && InspireTree.hasOwnProperty('default') ? InspireTree['default'] : InspireTree;
+
+var ENTER = 12;
+var LEFT_ARROW = 37;
+var UP_ARROW = 38;
+var RIGHT_ARROW = 39;
+var DOWN_ARROW = 40;
 
 function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
@@ -3539,7 +3545,7 @@ var EditForm = function (_Component) {
     }, {
         key: 'keypress',
         value: function keypress(event) {
-            if (event.which === 13) {
+            if (event.which === ENTER) {
                 return this.save();
             }
         }
@@ -4474,7 +4480,7 @@ var InspireDOM = function () {
             this.$target.setAttribute('tabindex', this.config.tabindex || 0);
 
             // Handle keyboard interaction
-            this.$target.addEventListener('keyup', this.keyboardListener.bind(this));
+            this.$target.addEventListener('keydown', this.keyboardListener.bind(this));
 
             // Drag and drop listeners
             if (this.config.dragAndDrop.enabled) {
@@ -4599,25 +4605,34 @@ var InspireDOM = function () {
          * @return {void}
          */
         value: function keyboardListener(event) {
+            event.stopPropagation();
+
+            // Ignore keys we won't care for.
+            // For example, this avoids trampling cmd+reload
+            if ([DOWN_ARROW, ENTER, LEFT_ARROW, RIGHT_ARROW, UP_ARROW].indexOf(event.which) >= 0) {
+                return;
+            }
+
             // Navigation
-            var focusedNode = this._tree.focused();
-            if (focusedNode) {
-                focusedNode = focusedNode[0];
+            var focusedNodes = this._tree.focused();
+            if (focusedNodes.length) {
+                event.preventDefault();
+
                 switch (event.which) {
-                    case 40:
-                        this.moveFocusDownFrom(focusedNode);
+                    case DOWN_ARROW:
+                        this.moveFocusDownFrom(focusedNodes[0]);
                         break;
-                    case 13:
+                    case ENTER:
                         focusedNode.toggleSelect();
                         break;
-                    case 37:
+                    case LEFT_ARROW:
                         focusedNode.collapse();
                         break;
-                    case 39:
+                    case RIGHT_ARROW:
                         focusedNode.expand();
                         break;
-                    case 38:
-                        this.moveFocusUpFrom(focusedNode);
+                    case UP_ARROW:
+                        this.moveFocusUpFrom(focusedNodes[0]);
                         break;
                     default:
                 }
