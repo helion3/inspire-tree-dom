@@ -244,7 +244,7 @@ export default class InspireDOM {
 
         // Ignore keys we won't care for.
         // For example, this avoids trampling cmd+reload
-        if ([keys.DOWN_ARROW, keys.ENTER, keys.LEFT_ARROW, keys.RIGHT_ARROW, keys.UP_ARROW].indexOf(event.which) >= 0) {
+        if ([keys.DOWN_ARROW, keys.ENTER, keys.LEFT_ARROW, keys.RIGHT_ARROW, keys.UP_ARROW].indexOf(event.which) < 0) {
             return;
         }
 
