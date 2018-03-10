@@ -1,5 +1,4 @@
 import Component from 'inferno-component';
-import Inferno from 'inferno';
 
 export default class Checkbox extends Component {
     click(event) {

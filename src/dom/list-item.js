@@ -3,7 +3,6 @@ import classlist from '../lib/classlist';
 import Component from 'inferno-component';
 import EditToolbar from './edit-toolbar';
 import EmptyList from './empty-list';
-import Inferno from 'inferno';
 import InspireTree from 'inspire-tree';
 import List from './list';
 import NodeAnchor from './node-anchor.js';

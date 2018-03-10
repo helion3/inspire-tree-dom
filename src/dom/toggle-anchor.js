@@ -1,5 +1,4 @@
 import Component from 'inferno-component';
-import Inferno from 'inferno';
 
 export default class ToggleAnchor extends Component {
     className() {

@@ -1,7 +1,6 @@
 import classlist from '../lib/classlist';
 import Component from 'inferno-component';
 import EditForm from './edit-form';
-import Inferno from 'inferno';
 
 export default class NodeAnchor extends Component {
     blur() {

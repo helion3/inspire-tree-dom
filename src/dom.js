@@ -4,7 +4,6 @@
 import * as _ from 'lodash';
 import * as keys from './lib/keycodes';
 import { render } from 'inferno';
-import Inferno from 'inferno';
 import InspireTree from 'inspire-tree';
 import Tree from './dom/tree';
 

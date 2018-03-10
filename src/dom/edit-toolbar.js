@@ -1,6 +1,5 @@
 import blankNode from '../lib/blank-node';
 import Component from 'inferno-component';
-import Inferno from 'inferno';
 
 export default class EditToolbar extends Component {
     shouldComponentUpdate() {

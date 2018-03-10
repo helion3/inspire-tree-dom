@@ -1,5 +1,4 @@
 import Component from 'inferno-component';
-import Inferno from 'inferno';
 import ListItem from './list-item';
 import stateComparator from '../lib/state-comparator';
 
