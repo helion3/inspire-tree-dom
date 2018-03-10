@@ -32,7 +32,7 @@ export default class ListItem extends Component {
     getAttributes() {
         const node = this.props.node;
         const attributes = _.clone(node.itree.li.attributes) || {};
-        attributes.className = this.getClassNames();
+        attributes.class = attributes.className = this.getClassNames();
 
         // Force internal-use attributes
         attributes['data-uid'] = node.id;

@@ -102,7 +102,7 @@ export default class NodeAnchor extends Component {
             classNames.push(node.itree.icon || (this.props.hasOrWillHaveChildren ? folder : 'icon-file-empty'));
         }
 
-        attributes.className = classNames.join(' ');
+        attributes.class = attributes.className = classNames.join(' ');
 
         let content = node.text;
         if (node.editing()) {
