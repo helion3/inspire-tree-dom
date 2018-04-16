@@ -276,35 +276,38 @@ export default class ListItem extends Component {
         if (treeId === this.props.dom._tree.id) {
             sourceTree = this.props.dom._tree;
         }
-        else {
+        else if (treeId) {
             sourceTree = document.querySelector('[data-uid="' + treeId + '"]').inspireTree;
         }
 
-        const node = sourceTree.node(nodeId);
-        node.state('drop-target', true);
-
-        const exported = node.remove(true);
-
-        // Get the index of the target node
-        let targetIndex = targetNode.context().indexOf(targetNode);
-
+        // Only source/handle node if it's a node that was dropped
         let newNode, newIndex;
-        if (dir === 0) {
-            // Add as a child
-            newNode = targetNode.addChild(exported);
+        if (sourceTree) {
+            const node = sourceTree.node(nodeId);
+            node.state('drop-target', true);
 
-            // Cache the new index
-            newIndex = targetNode.children.indexOf(newNode);
+            const exported = node.remove(true);
 
-            // Auto-expand
-            targetNode.expand();
-        }
-        else {
-            // Determine the new index
-            newIndex = dir === 1 ? ++targetIndex : targetIndex;
+            // Get the index of the target node
+            let targetIndex = targetNode.context().indexOf(targetNode);
 
-            // Insert and cache the node
-            newNode = targetNode.context().insertAt(newIndex, exported);
+            if (dir === 0) {
+                // Add as a child
+                newNode = targetNode.addChild(exported);
+
+                // Cache the new index
+                newIndex = targetNode.children.indexOf(newNode);
+
+                // Auto-expand
+                targetNode.expand();
+            }
+            else {
+                // Determine the new index
+                newIndex = dir === 1 ? ++targetIndex : targetIndex;
+
+                // Insert and cache the node
+                newNode = targetNode.context().insertAt(newIndex, exported);
+            }
         }
 
         this.props.dom._tree.emit('node.drop', event, newNode, targetNode, newIndex);
