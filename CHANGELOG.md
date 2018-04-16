@@ -1,5 +1,9 @@
 # Changes to Inspire Tree DOM
 
+# 4.0.4
+
+- Fixed drop event logic failing when non-nodes are dropped.
+
 # 4.0.3
 
 - Fixed color of focused wholerow border for dark theme.

@@ -4,12 +4,10 @@
   border-radius: 3px;
   display: inline-block;
   height: 20px;
-  -webkit-transition: all 150ms linear;
   transition: all 150ms linear;
   width: 20px; }
   .inspire-tree .btn:hover {
-    -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); }
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1); }
   .inspire-tree .btn + .btn {
     margin-left: 5px; }
   .inspire-tree .btn.icon {
@@ -58,8 +56,7 @@
   .inspire-tree:focus {
     outline: none; }
   .inspire-tree, .inspire-tree * {
-    -webkit-box-sizing: border-box;
-            box-sizing: border-box; }
+    box-sizing: border-box; }
   .inspire-tree ol {
     list-style: none;
     margin: 0;
@@ -297,8 +294,8 @@
   width: 100%;
   z-index: 1; }
 
-.inspire-tree .focused:not(.selected) > .wholerow {
-  outline: 1px dotted white; }
+.inspire-tree .focused > .wholerow {
+  border: 1px dotted white; }
 
 .inspire-tree .title-wrap:hover + .wholerow {
   background: rgba(100, 100, 100, 0.5); }
