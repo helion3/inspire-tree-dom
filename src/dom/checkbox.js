@@ -18,7 +18,7 @@ export default class Checkbox extends Component {
 
     render() {
         return (<input
-            checked={this.props.node.checked()}
+            checked={this.props.checked}
             indeterminate={this.props.indeterminate}
             onClick={this.click.bind(this)}
             type='checkbox' />);
