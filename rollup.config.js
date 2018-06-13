@@ -5,7 +5,7 @@ import gzip from 'rollup-plugin-gzip';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
 import path from 'path';
-import uglify from 'rollup-plugin-uglify';
+import { uglify } from 'rollup-plugin-uglify';
 
 // Read package config
 const pkgConfig = require('./package.json');
