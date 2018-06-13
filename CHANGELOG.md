@@ -1,5 +1,9 @@
 # Changes to Inspire Tree DOM
 
+# 4.0.5
+
+- Updated to Inferno 5.1.1, which includes a fix for compatibility with angularjs.
+
 # 4.0.4
 
 - Fixed drop event logic failing when non-nodes are dropped.
