@@ -1,6 +1,6 @@
+import { Component } from 'inferno';
 import Checkbox from './checkbox';
 import classlist from '../lib/classlist';
-import Component from 'inferno-component';
 import EditToolbar from './edit-toolbar';
 import EmptyList from './empty-list';
 import InspireTree from 'inspire-tree';

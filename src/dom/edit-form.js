@@ -1,4 +1,4 @@
-import Component from 'inferno-component';
+import { Component } from 'inferno';
 import { ENTER } from '../lib/keycodes';
 import stateComparator from '../lib/state-comparator';
 

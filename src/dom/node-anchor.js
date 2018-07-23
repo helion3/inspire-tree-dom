@@ -1,5 +1,5 @@
+import { Component } from 'inferno';
 import classlist from '../lib/classlist';
-import Component from 'inferno-component';
 import EditForm from './edit-form';
 
 export default class NodeAnchor extends Component {

@@ -1,5 +1,5 @@
+import { Component } from 'inferno';
 import blankNode from '../lib/blank-node';
-import Component from 'inferno-component';
 import List from './list';
 
 export default class Tree extends Component {
