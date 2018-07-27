@@ -1,5 +1,14 @@
 # Changes to Inspire Tree DOM
 
+# 5.0.0 alpha 1
+
+- Updated hierarchy CSS to use first/last/only renderable position logic instead of :first/:last css.
+
+**Breaking Changes**
+
+CSS no longer uses `:first-child`, `:last-child`, and `:only-child` pseudo-selectors.
+Now you can use `.first`, `.last`, and `.only`.
+
 # 4.0.5
 
 - Updated to Inferno 5.1.1, which includes a fix for compatibility with angularjs.

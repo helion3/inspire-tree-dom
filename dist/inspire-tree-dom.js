@@ -1,5 +1,5 @@
 /* Inspire Tree DOM
- * @version 4.0.5
+ * @version 5.0.0-alpha.1
  * https://github.com/helion3/inspire-tree-dom
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
@@ -15,10 +15,7 @@
 
     var NO_OP = '$NO_OP';
     var ERROR_MSG = 'a runtime error occured! Use Inferno in development environment to find the error.';
-    // This should be boolean and not reference to window.document
     var isBrowser = !!(typeof window !== 'undefined' && window.document);
-    // this is MUCH faster than .constructor === Array and instanceof Array
-    // in Node 7 and the later versions of V8, slower in older versions though
     var isArray = Array.isArray;
     function isStringOrNumber(o) {
         var type = typeof o;
@@ -47,9 +44,6 @@
     }
     function isUndefined(o) {
         return o === void 0;
-    }
-    function isObject(o) {
-        return typeof o === 'object';
     }
     function throwError(message) {
         if (!message) {
@@ -430,7 +424,6 @@
                 // Firefox incorrectly triggers click event for mid/right mouse buttons.
                 // This bug has been active for 12 years.
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=184051
-                event.preventDefault();
                 event.stopPropagation();
                 return false;
             }
@@ -685,7 +678,7 @@
 
     function remove(vNode, parentDom) {
         unmount(vNode);
-        if (!isNull(parentDom)) {
+        if (parentDom && vNode.dom) {
             removeChild(parentDom, vNode.dom);
             // Let carbage collector free memory
             vNode.dom = null;
@@ -732,30 +725,34 @@
                 }
             }
         }
-        else if (flags & 14 /* Component */) {
-            var instance = vNode.children;
-            var ref$1 = vNode.ref;
-            if (flags & 4 /* ComponentClass */) {
-                if (isFunction(instance.componentWillUnmount)) {
-                    instance.componentWillUnmount();
-                }
-                if (isFunction(ref$1)) {
-                    ref$1(null);
-                }
-                instance.$UN = true;
-                unmount(instance.$LI);
-            }
-            else {
-                if (!isNullOrUndef(ref$1) && isFunction(ref$1.onComponentWillUnmount)) {
-                    ref$1.onComponentWillUnmount(vNode.dom, vNode.props || EMPTY_OBJ);
-                }
-                unmount(instance);
-            }
-        }
-        else if (flags & 1024 /* Portal */) {
+        else {
             var children$1 = vNode.children;
-            if (!isNull(children$1) && isObject(children$1)) {
-                remove(children$1, vNode.type);
+            // Safe guard for crashed VNode
+            if (children$1) {
+                if (flags & 14 /* Component */) {
+                    var ref$1 = vNode.ref;
+                    if (flags & 4 /* ComponentClass */) {
+                        if (isFunction(children$1.componentWillUnmount)) {
+                            children$1.componentWillUnmount();
+                        }
+                        if (isFunction(ref$1)) {
+                            ref$1(null);
+                        }
+                        children$1.$UN = true;
+                        if (children$1.$LI) {
+                            unmount(children$1.$LI);
+                        }
+                    }
+                    else {
+                        if (!isNullOrUndef(ref$1) && isFunction(ref$1.onComponentWillUnmount)) {
+                            ref$1.onComponentWillUnmount(vNode.dom, vNode.props || EMPTY_OBJ);
+                        }
+                        unmount(children$1);
+                    }
+                }
+                else if (flags & 1024 /* Portal */) {
+                    remove(children$1, vNode.type);
+                }
             }
         }
     }
@@ -1145,9 +1142,7 @@
     }
     function createClassMountCallback(instance) {
         return function () {
-            instance.$UPD = true;
             instance.componentDidMount();
-            instance.$UPD = false;
         };
     }
     function mountClassComponentCallbacks(vNode, ref, instance) {
@@ -1527,7 +1522,7 @@
             }
         }
         /* Update if scu is not defined, or it returns truthy value or force */
-        var hasSCU = isFunction(instance.shouldComponentUpdate);
+        var hasSCU = Boolean(instance.shouldComponentUpdate);
         if (force || !hasSCU || (hasSCU && instance.shouldComponentUpdate(nextProps, nextState, context))) {
             if (isFunction(instance.componentWillUpdate)) {
                 instance.$BS = true;
@@ -1584,8 +1579,8 @@
             if (isClass) {
                 var instance = lastVNode.children;
                 instance.$UPD = true;
-                updateClassComponent(instance, instance.state, nextVNode, nextProps, parentDom, context, isSVG, false, false);
                 instance.$V = nextVNode;
+                updateClassComponent(instance, instance.state, nextVNode, nextProps, parentDom, context, isSVG, false, false);
                 instance.$UPD = false;
             }
             else {
@@ -1641,12 +1636,15 @@
         var commonLength = lastChildrenLength > nextChildrenLength ? nextChildrenLength : lastChildrenLength;
         var i = 0;
         var nextChild;
+        var lastChild;
         for (; i < commonLength; i++) {
             nextChild = nextChildren[i];
+            lastChild = lastChildren[i];
             if (nextChild.dom) {
                 nextChild = nextChildren[i] = directClone(nextChild);
             }
-            patch(lastChildren[i], nextChild, dom, context, isSVG);
+            patch(lastChild, nextChild, dom, context, isSVG);
+            lastChildren[i] = nextChild;
         }
         if (lastChildrenLength < nextChildrenLength) {
             for (i = commonLength; i < nextChildrenLength; i++) {
@@ -1666,13 +1664,10 @@
     function patchKeyedChildren(a, b, dom, context, isSVG, aLength, bLength) {
         var aEnd = aLength - 1;
         var bEnd = bLength - 1;
-        var aStart = 0;
-        var bStart = 0;
         var i;
-        var j;
-        var aNode = a[aStart];
-        var bNode = b[bStart];
-        var nextNode;
+        var j = 0;
+        var aNode = a[j];
+        var bNode = b[j];
         var nextPos;
         // Step 1
         // tslint:disable-next-line
@@ -1680,16 +1675,16 @@
             // Sync nodes with the same key at the beginning.
             while (aNode.key === bNode.key) {
                 if (bNode.dom) {
-                    b[bStart] = bNode = directClone(bNode);
+                    b[j] = bNode = directClone(bNode);
                 }
                 patch(aNode, bNode, dom, context, isSVG);
-                aStart++;
-                bStart++;
-                if (aStart > aEnd || bStart > bEnd) {
+                a[j] = bNode;
+                j++;
+                if (j > aEnd || j > bEnd) {
                     break outer;
                 }
-                aNode = a[aStart];
-                bNode = b[bStart];
+                aNode = a[j];
+                bNode = b[j];
             }
             aNode = a[aEnd];
             bNode = b[bEnd];
@@ -1699,37 +1694,40 @@
                     b[bEnd] = bNode = directClone(bNode);
                 }
                 patch(aNode, bNode, dom, context, isSVG);
+                a[aEnd] = bNode;
                 aEnd--;
                 bEnd--;
-                if (aStart > aEnd || bStart > bEnd) {
+                if (j > aEnd || j > bEnd) {
                     break outer;
                 }
                 aNode = a[aEnd];
                 bNode = b[bEnd];
             }
         }
-        if (aStart > aEnd) {
-            if (bStart <= bEnd) {
+        if (j > aEnd) {
+            if (j <= bEnd) {
                 nextPos = bEnd + 1;
-                nextNode = nextPos < bLength ? b[nextPos].dom : null;
-                while (bStart <= bEnd) {
-                    bNode = b[bStart];
+                var nextNode = nextPos < bLength ? b[nextPos].dom : null;
+                while (j <= bEnd) {
+                    bNode = b[j];
                     if (bNode.dom) {
-                        b[bStart] = bNode = directClone(bNode);
+                        b[j] = bNode = directClone(bNode);
                     }
-                    bStart++;
+                    j++;
                     insertOrAppend(dom, mount(bNode, null, context, isSVG), nextNode);
                 }
             }
         }
-        else if (bStart > bEnd) {
-            while (aStart <= aEnd) {
-                remove(a[aStart++], dom);
+        else if (j > bEnd) {
+            while (j <= aEnd) {
+                remove(a[j++], dom);
             }
         }
         else {
-            var aLeft = aEnd - aStart + 1;
-            var bLeft = bEnd - bStart + 1;
+            var aStart = j;
+            var bStart = j;
+            var aLeft = aEnd - j + 1;
+            var bLeft = bEnd - j + 1;
             var sources = [];
             for (i = 0; i < bLeft; i++) {
                 sources.push(0);
@@ -1970,7 +1968,7 @@
         }
         return fallbackMethod(fn);
     }
-    function queueStateChanges(component, newState, callback) {
+    function queueStateChanges(component, newState, callback, force) {
         if (isFunction(newState)) {
             newState = newState(component.state, component.props, component.context);
         }
@@ -1987,7 +1985,7 @@
             if (!component.$UPD) {
                 component.$PSS = true;
                 component.$UPD = true;
-                applyState(component, false, callback);
+                applyState(component, force, callback);
                 component.$UPD = false;
             }
             else {
@@ -2083,16 +2081,14 @@
             return;
         }
         // Do not allow double render during force update
-        this.$BR = true;
-        applyState(this, true, callback);
-        this.$BR = false;
+        queueStateChanges(this, {}, callback, true);
     };
     Component.prototype.setState = function setState (newState, callback) {
         if (this.$UN) {
             return;
         }
         if (!this.$BS) {
-            queueStateChanges(this, newState, callback);
+            queueStateChanges(this, newState, callback, false);
         }
         else {
             return;
@@ -2100,8 +2096,6 @@
     };
     // tslint:disable-next-line:no-empty
     Component.prototype.render = function render (nextProps, nextState, nextContext) { };
-    // Public
-    Component.defaultProps = null;
 
 
 
@@ -2132,8 +2126,6 @@
             }
         };
     }
-
-    var Component$1 = Component;
 
     var classCallCheck = function (instance, Constructor) {
       if (!(instance instanceof Constructor)) {
@@ -2235,7 +2227,7 @@
             }
         }]);
         return Checkbox;
-    }(Component$1);
+    }(Component);
 
     /**
      * Utility method for parsing and merging custom class names.
@@ -2337,7 +2329,7 @@
             }
         }]);
         return EditToolbar;
-    }(Component$1);
+    }(Component);
 
     var EmptyList = function (_Component) {
         inherits(EmptyList, _Component);
@@ -2350,11 +2342,11 @@
         createClass(EmptyList, [{
             key: 'render',
             value: function render$$1() {
-                return createVNode(1, 'ol', null, createVNode(1, 'li', 'leaf', createVNode(1, 'span', 'title icon icon-file-empty empty', this.props.text, 0), 2), 2);
+                return createVNode(1, 'ol', null, createVNode(1, 'li', 'leaf first last only', createVNode(1, 'span', 'title icon icon-file-empty empty', this.props.text, 0), 2), 2);
             }
         }]);
         return EmptyList;
-    }(Component$1);
+    }(Component);
 
     /**
      * Compares all keys on the given state. Returns true if any difference exists.
@@ -2504,7 +2496,7 @@
             }
         }]);
         return EditForm;
-    }(Component$1);
+    }(Component);
 
     var NodeAnchor = function (_Component) {
         inherits(NodeAnchor, _Component);
@@ -2653,7 +2645,7 @@
             }
         }]);
         return NodeAnchor;
-    }(Component$1);
+    }(Component);
 
     var ToggleAnchor = function (_Component) {
         inherits(ToggleAnchor, _Component);
@@ -2677,7 +2669,7 @@
             }
         }]);
         return ToggleAnchor;
-    }(Component$1);
+    }(Component);
 
     var ListItem = function (_Component) {
         inherits(ListItem, _Component);
@@ -2762,6 +2754,18 @@
 
                 if (node.expanded()) {
                     classNames.push('expanded');
+                }
+
+                if (node.isFirstRenderable()) {
+                    classNames.push('first');
+                }
+
+                if (node.isLastRenderable()) {
+                    classNames.push('last');
+                }
+
+                if (node.isOnlyRenderable()) {
+                    classNames.push('only');
                 }
 
                 classNames.push(node.hasOrWillHaveChildren() ? 'folder' : 'leaf');
@@ -3099,7 +3103,7 @@
             }
         }]);
         return ListItem;
-    }(Component$1);
+    }(Component);
 
     var List = function (_Component) {
         inherits(List, _Component);
@@ -3184,7 +3188,7 @@
             }
         }]);
         return List;
-    }(Component$1);
+    }(Component);
 
     var Tree = function (_Component) {
         inherits(Tree, _Component);
@@ -3232,7 +3236,7 @@
             }
         }]);
         return Tree;
-    }(Component$1);
+    }(Component);
 
     /**
      * Default InspireTree rendering logic.
