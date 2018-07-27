@@ -52,14 +52,14 @@
 
             $('.move-one').on('click', function() {
                 var selected = sourceTree.selected();
-                selected.softRemove().copy(true).to(destTree);
+                selected.softRemove().copy(destTree, true);
 
                 // If we moved a child node, expand nodes down to it
                 destTree.nodes(_.map(selected, 'id')).expandParents();
             });
 
             $('.revert-one').on('click', function() {
-                destTree.selected().softRemove().copy(true).to(sourceTree);
+                destTree.selected().softRemove().copy(sourceTree, true);
             });
 
             $('.move-all').on('click', function() {
