@@ -2360,9 +2360,9 @@ inquirer@^3.0.6:
     strip-ansi "^4.0.0"
     through "^2.3.6"
 
-inspire-tree@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/inspire-tree/-/inspire-tree-5.0.1.tgz#9b096f95ef182d538f7117302b53a536ddee7ffc"
+inspire-tree@6.0.0-alpha.1:
+  version "6.0.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/inspire-tree/-/inspire-tree-6.0.0-alpha.1.tgz#1c31ad4f30be71f65e92323b7ec65573dc2c6da5"
   dependencies:
     es6-promise "^4.1.1"
     eventemitter2 "^5.0.1"
