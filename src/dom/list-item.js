@@ -83,6 +83,18 @@ export default class ListItem extends Component {
             classNames.push('expanded');
         }
 
+        if (node.isFirstRenderable()) {
+            classNames.push('first');
+        }
+
+        if (node.isLastRenderable()) {
+            classNames.push('last');
+        }
+
+        if (node.isOnlyRenderable()) {
+            classNames.push('only');
+        }
+
         classNames.push(node.hasOrWillHaveChildren() ? 'folder' : 'leaf');
 
         return classNames.join(' ');
