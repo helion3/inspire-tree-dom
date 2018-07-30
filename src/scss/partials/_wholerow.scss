@@ -6,7 +6,7 @@
     .wholerow {
         height: $tree-node-height;
         left: 0;
-        // We can't use translation because IE11 doesn't render parent overflow right
+        // We can't use translation because IE11 doesn't render parent overflow correctly
         margin-top: -$tree-node-height;
         position: absolute;
         width: 100%;
@@ -17,17 +17,20 @@
         border: 1px dotted $tree-row-focused-color;
     }
 
+    .wholerow:hover,
     .title-wrap:hover + .wholerow {
-        background: $tree-row-hover-color;
+        background-color: $tree-row-hover-color;
     }
 
     .selected > .wholerow,
+    .selected > .wholerow:hover,
     .selected > .title-wrap:hover + .wholerow {
-        background: $tree-row-selected-color;
+        background-color: $tree-row-selected-color;
     }
 
     .matched > .wholerow,
+    .matched > .wholerow:hover,
     .matched > .title-wrap:hover + .wholerow {
-        background: $tree-row-matched-color;
+        background-color: $tree-row-matched-color;
     }
 }
