@@ -1,5 +1,5 @@
 /* Inspire Tree DOM
- * @version 5.0.0-alpha.1
+ * @version 5.0.0-alpha.2
  * https://github.com/helion3/inspire-tree-dom
  * @copyright Copyright 2015 Helion3, and other contributors
  * @license Licensed under MIT
