@@ -1,6 +1,6 @@
 {
   "name": "inspire-tree-dom",
-  "version": "5.0.0-alpha.1",
+  "version": "5.0.0-alpha.2",
   "description": "DOM rendering engine for Inspire Tree",
   "repository": "https://github.com/helion3/inspire-tree-dom",
   "license": "MIT",

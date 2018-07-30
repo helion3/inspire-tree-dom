@@ -1,5 +1,9 @@
 # Changes to Inspire Tree DOM
 
+# 5.0.0 alpha 2
+
+- Added hover color when cursor is over `.wholerow` and not `.title-wrap`. (Rebased from 4.x master)
+
 # 5.0.0 alpha 1
 
 - Updated hierarchy CSS to use first/last/only renderable position logic instead of :first/:last css.
