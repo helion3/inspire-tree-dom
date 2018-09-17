@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Component } from 'inferno';
 import Checkbox from './checkbox';
 import classlist from '../lib/classlist';

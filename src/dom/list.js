@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Component } from 'inferno';
 import ListItem from './list-item';
 import stateComparator from '../lib/state-comparator';
