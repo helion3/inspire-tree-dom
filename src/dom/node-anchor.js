@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Component } from 'inferno';
 import classlist from '../lib/classlist';
 import EditForm from './edit-form';
