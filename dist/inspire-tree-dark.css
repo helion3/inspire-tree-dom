@@ -297,13 +297,16 @@
 .inspire-tree .focused > .wholerow {
   border: 1px dotted white; }
 
+.inspire-tree .wholerow:hover,
 .inspire-tree .title-wrap:hover + .wholerow {
-  background: rgba(100, 100, 100, 0.5); }
+  background-color: rgba(100, 100, 100, 0.5); }
 
 .inspire-tree .selected > .wholerow,
+.inspire-tree .selected > .wholerow:hover,
 .inspire-tree .selected > .title-wrap:hover + .wholerow {
-  background: rgba(74, 110, 116, 0.5); }
+  background-color: rgba(74, 110, 116, 0.5); }
 
 .inspire-tree .matched > .wholerow,
+.inspire-tree .matched > .wholerow:hover,
 .inspire-tree .matched > .title-wrap:hover + .wholerow {
-  background: rgba(247, 255, 170, 0.5); }
+  background-color: rgba(247, 255, 170, 0.5); }

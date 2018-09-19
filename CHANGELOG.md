@@ -1,5 +1,10 @@
 # Changes to Inspire Tree DOM
 
+# 4.0.6
+
+- Fixed missing lodash imports from some source files.
+- Fixed wholerow hover styling when cursor was outside title element.
+
 # 4.0.5
 
 - Updated to Inferno 5.1.1, which includes a fix for compatibility with angularjs.
